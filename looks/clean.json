@@ -1,0 +1,245 @@
+{
+ "_about": "The neutral default: DM Sans, Instagram-style tight boxes (black on white, white on black), white outline type over footage. Works for anyone.",
+ "font": "DMSans-VF.ttf",
+ "weight": 600,
+ "size": 58,
+ "max_width": 900,
+ "pad_x": 18,
+ "pad_y": 10,
+ "line_gap": 2,
+ "block_gap": 44,
+ "center_y": 0.5,
+ "styles": {
+  "white": {
+   "box": [
+    255,
+    255,
+    255,
+    255
+   ],
+   "ink": [
+    0,
+    0,
+    0,
+    255
+   ]
+  },
+  "black": {
+   "box": [
+    0,
+    0,
+    0,
+    255
+   ],
+   "ink": [
+    255,
+    255,
+    255,
+    255
+   ]
+  },
+  "outline": {
+   "outline": true,
+   "ink": [
+    255,
+    255,
+    255,
+    255
+   ],
+   "edge": [
+    0,
+    0,
+    0,
+    255
+   ],
+   "edge_w": 0.06,
+   "leading": 0.95,
+   "weight": 700,
+   "shadow": {
+    "color": [
+     0,
+     0,
+     0,
+     170
+    ],
+    "dy": 0.05,
+    "blur": 0.035,
+    "spread": 0.02
+   }
+  },
+  "red": {
+   "box": [
+    226,
+    35,
+    35,
+    255
+   ],
+   "ink": [
+    255,
+    255,
+    255,
+    255
+   ]
+  },
+  "yellow": {
+   "box": [
+    255,
+    214,
+    0,
+    255
+   ],
+   "ink": [
+    0,
+    0,
+    0,
+    255
+   ]
+  }
+ },
+ "stagger_s": 2.4,
+ "duration_s": 7.0,
+ "listicle": {
+  "title": {
+   "size": 64,
+   "weight": 800,
+   "style": "black",
+   "center_y": 0.215
+  },
+  "item": {
+   "size": 44,
+   "weight": 600,
+   "style": "outline",
+   "gap": 20
+  },
+  "header": {
+   "size": 48,
+   "weight": 700
+  },
+  "header_styles": {
+   "red": {
+    "box": [
+     226,
+     35,
+     35,
+     255
+    ],
+    "ink": [
+     255,
+     255,
+     255,
+     255
+    ]
+   },
+   "green": {
+    "box": [
+     34,
+     160,
+     70,
+     255
+    ],
+    "ink": [
+     255,
+     255,
+     255,
+     255
+    ]
+   }
+  },
+  "small": {
+   "size": 28,
+   "weight": 500,
+   "style": "outline"
+  },
+  "punchline": {
+   "size": 48,
+   "weight": 700,
+   "style": "yellow"
+  },
+  "list_top": 0.29,
+  "max_width": 930,
+  "column_width": 470
+ },
+ "xreel": {
+  "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font.",
+  "font": "Inter-Regular.otf",
+  "font_bold": "Inter-Bold.otf",
+  "mode": "dark",
+  "avatar_size": 134,
+  "avatar_top": 300,
+  "name_size": 52,
+  "handle_size": 51,
+  "text_size": 53,
+  "leading": 1.4,
+  "tracking": -0.015,
+  "header_size": 30,
+  "left": 108,
+  "text_left": 115,
+  "name_left": 266,
+  "name_dy": 37,
+  "handle_dy": 93,
+  "body_dy": 186,
+  "image_gap": 123,
+  "badge_size": 39,
+  "badge_gap": 10,
+  "badge_dy": 0,
+  "image_left": 111,
+  "image_width": 864,
+  "image_radius": 24,
+  "check": [
+   29,
+   155,
+   240
+  ],
+  "handle_color": [
+   128,
+   128,
+   128
+  ],
+  "duration_s": 6.0,
+  "zoom": 0.03
+ },
+ "captions": {
+  "font": "DMSans-VF.ttf",
+  "size": 80,
+  "weight": 700,
+  "bold_weight": 900,
+  "fill": [
+   255,
+   255,
+   255,
+   255
+  ],
+  "edge": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "edge_w": 0.06,
+  "shadow": {
+   "color": [
+    0,
+    0,
+    0,
+    190
+   ],
+   "dy": 0.05,
+   "blur": 0.06,
+   "spread": 0.04
+  },
+  "center_y": 1400,
+  "max_width": 940,
+  "max_words": 5
+ },
+ "title": {
+  "style": "black",
+  "size": 84,
+  "max_size": 104,
+  "min_size": 56,
+  "weight": 800,
+  "top": 330,
+  "hold": 3.5,
+  "fade_out": 0.3,
+  "max_width": 960
+ }
+}

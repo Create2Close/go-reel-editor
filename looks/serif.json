@@ -1,0 +1,233 @@
+{
+ "_about": "Editorial: a book serif in tight boxes for b-roll and listicles, white Instrument Serif with a hard black edge for type over footage and for captions (one full line).",
+ "font": "Gelasio-VF.ttf",
+ "weight": 500,
+ "size": 62,
+ "max_width": 900,
+ "pad_x": 16,
+ "pad_y": 9,
+ "line_gap": 2,
+ "block_gap": 46,
+ "center_y": 0.5,
+ "styles": {
+  "white": {
+   "box": [
+    255,
+    255,
+    255,
+    255
+   ],
+   "ink": [
+    0,
+    0,
+    0,
+    255
+   ]
+  },
+  "black": {
+   "box": [
+    0,
+    0,
+    0,
+    255
+   ],
+   "ink": [
+    255,
+    255,
+    255,
+    255
+   ]
+  },
+  "outline": {
+   "outline": true,
+   "ink": [
+    255,
+    255,
+    255,
+    255
+   ],
+   "edge": [
+    0,
+    0,
+    0,
+    255
+   ],
+   "edge_w": 0.07,
+   "leading": 0.86,
+   "font": "InstrumentSerif-Regular.ttf",
+   "size_scale": 1.2,
+   "bold": 0.015,
+   "shadow": {
+    "color": [
+     0,
+     0,
+     0,
+     170
+    ],
+    "dy": 0.05,
+    "blur": 0.035,
+    "spread": 0.02
+   }
+  },
+  "red": {
+   "box": [
+    226,
+    35,
+    35,
+    255
+   ],
+   "ink": [
+    255,
+    255,
+    255,
+    255
+   ]
+  }
+ },
+ "stagger_s": 2.4,
+ "duration_s": 7.0,
+ "listicle": {
+  "title": {
+   "size": 58,
+   "weight": 600,
+   "style": "black",
+   "center_y": 0.205
+  },
+  "item": {
+   "size": 40,
+   "weight": 500,
+   "style": "outline",
+   "gap": 22
+  },
+  "header": {
+   "size": 50,
+   "weight": 600
+  },
+  "header_styles": {
+   "red": {
+    "box": [
+     226,
+     35,
+     35,
+     255
+    ],
+    "ink": [
+     255,
+     255,
+     255,
+     255
+    ]
+   },
+   "green": {
+    "box": [
+     34,
+     160,
+     70,
+     255
+    ],
+    "ink": [
+     255,
+     255,
+     255,
+     255
+    ]
+   }
+  },
+  "small": {
+   "size": 30,
+   "weight": 500,
+   "style": "outline"
+  },
+  "punchline": {
+   "size": 48,
+   "weight": 600,
+   "style": "black"
+  },
+  "list_top": 0.28,
+  "max_width": 940,
+  "column_width": 480
+ },
+ "xreel": {
+  "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font.",
+  "font": "Inter-Regular.otf",
+  "font_bold": "Inter-Bold.otf",
+  "mode": "dark",
+  "avatar_size": 134,
+  "avatar_top": 300,
+  "name_size": 52,
+  "handle_size": 51,
+  "text_size": 53,
+  "leading": 1.4,
+  "tracking": -0.015,
+  "header_size": 30,
+  "left": 108,
+  "text_left": 115,
+  "name_left": 266,
+  "name_dy": 37,
+  "handle_dy": 93,
+  "body_dy": 186,
+  "image_gap": 123,
+  "badge_size": 39,
+  "badge_gap": 10,
+  "badge_dy": 0,
+  "image_left": 111,
+  "image_width": 864,
+  "image_radius": 24,
+  "check": [
+   29,
+   155,
+   240
+  ],
+  "handle_color": [
+   128,
+   128,
+   128
+  ],
+  "duration_s": 6.0,
+  "zoom": 0.03
+ },
+ "captions": {
+  "font": "InstrumentSerif-Regular.ttf",
+  "size": 96,
+  "weight": 400,
+  "bold_weight": 400,
+  "fill": [
+   255,
+   255,
+   255,
+   255
+  ],
+  "edge": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "edge_w": 0.07,
+  "shadow": {
+   "color": [
+    0,
+    0,
+    0,
+    190
+   ],
+   "dy": 0.05,
+   "blur": 0.06,
+   "spread": 0.04
+  },
+  "center_y": 1480,
+  "max_width": 940,
+  "max_words": 7
+ },
+ "title": {
+  "style": "white",
+  "size": 72,
+  "max_size": 92,
+  "min_size": 52,
+  "weight": 600,
+  "top": 330,
+  "hold": 3.5,
+  "fade_out": 0.3,
+  "max_width": 960
+ }
+}
