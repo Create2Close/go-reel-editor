@@ -1,6 +1,6 @@
 ---
 name: go-reel-editor
-description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'set me up' / 'install the reel editor' / 'continue setup'."
+description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'set me up', 'what's wrong?' / 'install the reel editor' / 'continue setup'."
 ---
 
 # GO! Reel Editor
@@ -177,6 +177,9 @@ style, copy the closest look to `~/.go-reel-editor/looks/<their-name>.json` and 
 `gre profile --look <name>`.
 
 ## 7. When something breaks
+
+- **"What's wrong?"** (or "it's not working"): run `gre doctor`, read the last error in this session, and say in
+  two or three plain lines what's wrong and the one thing you'll do (or they must do). Then do it.
 
 - `PROBLEM: ... outside the feed-safe band`: too much text for the frame; offer to cut a line or shorten it.
 - A clip won't read: `gre doctor`, then re-run setup.
