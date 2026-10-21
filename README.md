@@ -10,7 +10,7 @@ and b-rolls) and the **yap** skill (writes yaps): the writers write, the editor 
 ## What you need
 
 - A Claude **Pro or Max** plan and the **Claude desktop app** (its **Code** tab, set to **Local**).
-- A Mac or a Windows PC. About 1 GB free for the editor; 5 GB more the first time you edit a yap.
+- A Mac or a Windows PC. About 1 GB free for the editor; about 4 GB more the first time you edit a yap.
 - Mac only: Homebrew (the setup tells you the one line to paste if you don't have it).
 
 ## Install (one sentence)
