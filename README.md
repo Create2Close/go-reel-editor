@@ -18,7 +18,7 @@ and b-rolls) and the **yap** skill (writes yaps): the writers write, the editor 
 Open the Claude desktop app → **Code** → pick a folder for your reels (on Windows, NOT inside Documents,
 Desktop or OneDrive; `C:\Users\<you>\Reels` is perfect) → paste:
 
-> Install the GO! Reel Editor from https://github.com/OWNER/go-reel-editor and set me up.
+> Install the GO! Reel Editor from https://github.com/Create2Close/go-reel-editor and set me up.
 
 Claude installs it, then sets up the free tools it needs (10-15 minutes the first time). Update later with
 "update the reel editor".
@@ -40,8 +40,8 @@ Install into the user's Claude skills folder, then run the setup:
 
 ```bash
 mkdir -p ~/.claude/skills
-git clone https://github.com/OWNER/go-reel-editor ~/.claude/skills/go-reel-editor \
-  || (curl -fsSL https://github.com/OWNER/go-reel-editor/archive/refs/heads/main.tar.gz | tar xz -C ~/.claude/skills \
+git clone https://github.com/Create2Close/go-reel-editor ~/.claude/skills/go-reel-editor \
+  || (curl -fsSL https://github.com/Create2Close/go-reel-editor/archive/refs/heads/main.tar.gz | tar xz -C ~/.claude/skills \
       && mv ~/.claude/skills/go-reel-editor-main ~/.claude/skills/go-reel-editor)
 bash ~/.claude/skills/go-reel-editor/setup.sh
 ```
