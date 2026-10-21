@@ -15,7 +15,9 @@ give notes in plain words, and post.
 uv run -q --project "<this skill's folder>" gre <command>
 ```
 
-(`<this skill's folder>` = the folder this SKILL.md is in, e.g. `~/.claude/skills/go-reel-editor`.) Every
+(`<this skill's folder>` = the folder this SKILL.md is in, e.g. `~/.claude/skills/go-reel-editor`.) If a call says
+`uv: command not found` right after setup, the session started before the tools were on PATH: prefix the command with
+`PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"` for now, and suggest a new session. Every
 command prints `PROBLEM: ...` in plain words when something is off: read it, fix it or explain it in one line.
 
 ## 0. Before anything: is it set up?

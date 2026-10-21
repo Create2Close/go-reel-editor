@@ -11,6 +11,11 @@ W, H, FPS = 1080, 1920, 30
 # The feed-safe band: Facebook's feed shows reels as a 4:5 crop (y285-1635), Instagram's grid as 3:4 (y240-1680),
 # and the reels UI covers the top ~200 px and the bottom from ~y1620. All text stays inside y300-1600.
 SAFE_TOP, SAFE_BOTTOM = 300, 1600
+# The REEL safe zone (Cyrus's News deck: "Leave the top 14%, bottom 35%, and sides 6% clear"), the strictest of all:
+# the app UI on top, the caption + buttons at the bottom. Combined with the feed crops above it is x65-1015, y300-1248.
+# X-reels keep their whole card inside it.
+REEL_LEFT, REEL_RIGHT = round(W * 0.06), W - round(W * 0.06)
+REEL_TOP, REEL_BOTTOM = max(SAFE_TOP, round(H * 0.14)), round(H * 0.65)
 
 
 class UserError(Exception):

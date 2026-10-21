@@ -160,7 +160,7 @@
   "column_width": 470
  },
  "xreel": {
-  "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font.",
+  "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font. Static (no zoom), 6-7 s, the card centred in the reel safe zone.",
   "font": "Inter-Regular.otf",
   "font_bold": "Inter-Bold.otf",
   "mode": "dark",
@@ -178,7 +178,7 @@
   "name_dy": 37,
   "handle_dy": 93,
   "body_dy": 186,
-  "image_gap": 123,
+  "image_gap": 70,
   "badge_size": 39,
   "badge_gap": 10,
   "badge_dy": 0,
@@ -195,8 +195,7 @@
    128,
    128
   ],
-  "duration_s": 6.0,
-  "zoom": 0.03
+  "duration_s": 6.0
  },
  "captions": {
   "font": "DMSans-VF.ttf",

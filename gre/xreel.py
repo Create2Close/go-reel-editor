@@ -1,5 +1,7 @@
-"""X-reel: a news story as a styled X post (avatar, name, badge, handle, 2-3 lines, one image), ~6 s, with a slow
-zoom so the frame never looks frozen. The story lives in the caption.
+"""X-reel: a news story as a styled X post (avatar, name, badge, handle, 2-3 lines, one image). STATIC: no zoom, no
+motion, one card held 6-7 s (Cyrus, 2026-10-21). The whole card sits inside the reel safe zone (x65-1015, y300-1248:
+the top 14 %, bottom 35 % and sides 6 % stay clear, and the Facebook/Instagram feed crops with them), centred in it.
+The story lives in the caption.
 
   spec = {"text": "BREAKING: ...\n\nHere's what it means 👇", "image": "news.jpg",
           "image_header": "optional strip above the image", "duration": 6, "mode": "dark" | "light",
@@ -9,7 +11,8 @@ Organic posts only: never put X-post chrome inside a paid ad."""
 import math, sys, tempfile
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-from .common import W, H, SAFE_TOP, SAFE_BOTTOM, X264, FONTS, HOME, die, run, need, font_file, profile
+from .common import (W, H, REEL_LEFT, REEL_RIGHT, REEL_TOP, REEL_BOTTOM, X264, FONTS, HOME, die, run, need,
+                     font_file, profile)
 
 APPLE_EMOJI = Path("/System/Library/Fonts/Apple Color Emoji.ttc")
 
@@ -161,13 +164,16 @@ def card(spec, lk):
     pic = pic.resize((iw, round(pic.height * iw / pic.width)), Image.LANCZOS)
     hdr_h = round(X["header_size"] * 2.0) if spec.get("image_header") else 0
     text_h = X["body_dy"] + (len(lines) - 1) * lh + X["image_gap"] + hdr_h
-    top = max(SAFE_TOP, X.get("avatar_top", SAFE_TOP))
-    room = SAFE_BOTTOM - top - text_h
-    if room < 200:
-        die(f"the post text is too long for the feed-safe band (y{SAFE_TOP}-{SAFE_BOTTOM}): keep it to 2-3 short lines")
+    room = REEL_BOTTOM - REEL_TOP - text_h
+    if room < 240:
+        die(f"the post text is too long for the reel safe zone (y{REEL_TOP}-{REEL_BOTTOM}): keep it to 2-3 short lines")
     if pic.height > room:                          # a tall photo is cropped, biased up: faces sit in the top third
         c = int((pic.height - room) * spec.get("crop_y", 0.2))
-        pic = pic.crop((0, c, pic.width, c + room))
+        pic = pic.crop((0, c, pic.width, c + int(room)))
+    top = int(REEL_TOP + (REEL_BOTTOM - REEL_TOP - text_h - pic.height) // 2)   # the card, centred in the safe zone
+    while _tlen(d, name, bold, 0) + X["name_left"] + X.get("badge_gap", 10) + X["badge_size"] > REEL_RIGHT \
+            and bold.size > 30:                    # a long name shrinks rather than run under the buttons
+        bold = ImageFont.truetype(str(font_file(X["font_bold"])), bold.size - 2)
     av = X["avatar_size"]
     a = Image.open(avatar).convert("RGBA")
     s = min(a.size)
@@ -208,19 +214,34 @@ def card(spec, lk):
     return img
 
 
+def check_safe(img, bg):
+    """Every drawn pixel inside the reel safe zone (x65-1015, y300-1248), or a clear error."""
+    from PIL import ImageChops
+    diff = ImageChops.difference(img.convert("RGB"), Image.new("RGB", img.size, bg[:3])).convert("L").point(lambda v: 255 if v > 12 else 0)
+    bb = diff.getbbox()
+    if bb and (bb[0] < REEL_LEFT or bb[1] < REEL_TOP or bb[2] > REEL_RIGHT or bb[3] > REEL_BOTTOM):
+        die(f"the X-reel card spans x{bb[0]}-{bb[2]}, y{bb[1]}-{bb[3]}: outside the reel safe zone "
+            f"(x{REEL_LEFT}-{REEL_RIGHT}, y{REEL_TOP}-{REEL_BOTTOM}). Shorten the text or the name.")
+    return bb
+
+
 def render(spec, lk, out, log=print):
     for w in check(spec):
         log("warning: " + w)
     need("ffmpeg")
     X = lk["xreel"]
     dur = float(spec.get("duration") or X.get("duration_s", 6.0))
+    if not 6.0 <= dur <= 7.0:
+        log(f"warning: {dur:.1f} s: an X-reel holds 6-7 s")
+    light = spec.get("mode", X.get("mode", "dark")) == "light"
+    img = card(spec, lk)
+    bb = check_safe(img, (255, 255, 255) if light else (0, 0, 0))
     tmp = Path(tempfile.mkdtemp(prefix="gre-xreel-"))
     png = tmp / "card.png"
-    card(spec, lk).convert("RGB").resize((W * 2, H * 2), Image.LANCZOS).save(png)
-    n = round(dur * 30)
-    z = X.get("zoom", 0.03)
-    vf = (f"zoompan=z='1+{z}*on/{n}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={n}:s={W}x{H}:fps=30,format=yuv420p,"
-          "setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv")
-    run(["ffmpeg", "-loglevel", "error", "-y", "-loop", "1", "-i", png, "-vf", vf, "-frames:v", str(n), *X264, out])
-    log(f"rendered {out} ({dur:.1f} s, silent)")
+    img.convert("RGB").save(png)
+    n = round(dur * 30)                            # static: one card, every frame identical, no zoom
+    run(["ffmpeg", "-loglevel", "error", "-y", "-loop", "1", "-framerate", "30", "-i", png, "-vf",
+         "format=yuv420p,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv",
+         "-frames:v", str(n), "-tune", "stillimage", *X264, out])
+    log(f"rendered {out} ({dur:.1f} s, static, card at x{bb[0]}-{bb[2]} y{bb[1]}-{bb[3]} inside the reel safe zone, silent)")
     return out

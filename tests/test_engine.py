@@ -228,3 +228,27 @@ def test_personal_look_and_logo_colours(tmp, avatar):
     assert lk["listicle"]["punchline"]["style"] == "accent" and lk["captions"]["size"] == 100
     out = brand.sample_sheet(slug, tmp / "sheet.png")
     assert Image.open(out).size[1] == H // 3
+
+
+def test_xreel_is_static_and_inside_the_reel_safe_zone(tmp, avatar):
+    """Cyrus 2026-10-21: no slow zoom, 6-7 s, the card inside the reel safe zone (top 14 %, bottom 35 %, sides 6 %)."""
+    from gre.common import REEL_LEFT, REEL_RIGHT, REEL_TOP, REEL_BOTTOM
+    tall = tmp / "tall.jpg"
+    Image.new("RGB", (900, 1600), (180, 60, 60)).save(tall)
+    spec = {"text": "BREAKING: A long test headline about a very large build in a fast-growing Texas suburb.\n\n"
+                    "Here's what it means 👇", "image": str(tall), "name": "A Very Long Display Name Indeed"}
+    out = tmp / "xreel-static.mp4"
+    xreel.render(spec, load_look("clean"), str(out), log=lambda *_: None)
+    assert 6.0 <= video_info(out)["duration"] <= 7.0
+    frames = []
+    for t in (0.0, 5.9):
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", str(t), "-i", str(out), "-frames:v", "1", "-f", "rawvideo",
+                              "-pix_fmt", "gray", "-"], capture_output=True).stdout
+        frames.append(raw)
+    import numpy as np
+    a, b = (np.frombuffer(f, np.uint8).astype(int) for f in frames)
+    d = np.abs(a - b)
+    assert d.mean() < 0.05 and (d > 8).mean() < 0.001      # the same card, codec noise only (a zoom moves every pixel)
+    img = Image.frombytes("L", (W, H), frames[0]).point(lambda v: 255 if v > 12 else 0)
+    x0, y0, x1, y1 = img.getbbox()
+    assert x0 >= REEL_LEFT and x1 <= REEL_RIGHT and y0 >= REEL_TOP and y1 <= REEL_BOTTOM, (x0, y0, x1, y1)

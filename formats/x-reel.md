@@ -1,8 +1,8 @@
 # X-reel
 
 A news story as an X-post card: the member's avatar, name, verified badge and handle, 2-3 lines, one news image,
-on black (or white), held about 6 s with a slow zoom so it never looks frozen. The full story lives in the
-caption, so the reel loops while people read (2.5x plays per viewer). Top-of-funnel reach and speed to news:
+on black (or white). STATIC: no zoom, no motion, one card held 6-7 s. The full story lives in the caption, so
+the reel loops while people read (2.5x plays per viewer). Top-of-funnel reach and speed to news:
 "wide but local" (a Texas story with no mortgage content is proper top of funnel).
 
 ## What the editor builds
@@ -25,6 +25,9 @@ above the image; `"mode": "light"` gives the white version.
   to the card width; a tall photo is centre-cropped.
 - **The caption** (from the Writer: sectioned, ending "What this means for [market] Realtors" and "Bottom
   line", under 1,800 characters) goes in `out/<name>.caption.txt`, never on screen.
-- 6 s, silent.
+- **Static, 6-7 s, silent.** No slow zoom, ever (Cyrus, 2026-10-21).
+- **The whole card (avatar, name, text, image) sits inside the reel safe zone**: the top 14 %, bottom 35 % and
+  sides 6 % stay clear (x65-1015, y300-1248 on 1080x1920), which also clears the Facebook 4:5 and Instagram 3:4
+  feed crops. The engine centres the card there, crops a tall photo to fit, and refuses anything outside it.
 - **Organic only: never use X-post styling inside a paid ad.**
 - Only facts from the article. If the member's text states something the article doesn't, flag it.

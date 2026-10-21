@@ -10,6 +10,7 @@
 #   0 ready · 1 something needs the member (the output names it) · 2 restart Claude Code, then run it again
 set -uo pipefail
 SKILL="$(cd "$(dirname "$0")" && pwd)"
+ORIG_PATH="$PATH"
 say()  { printf '%s\n' "$*"; }
 have() { command -v "$1" >/dev/null 2>&1; }
 PENDING=0
@@ -51,6 +52,24 @@ if [ "$OS" = mac ]; then
     else say "  > installing uv..."; curl -LsSf https://astral.sh/uv/install.sh | sh; PATH="$HOME/.local/bin:$PATH"; fi
   else
     say "  ok uv"
+  fi
+  # Make the tools visible to EVERY later session, not just this run. Right after Homebrew installs (or for a second
+  # user on a Mac that already had Homebrew), /opt/homebrew/bin is not on the login PATH, so every editor command
+  # after setup would fail with "uv: command not found". Write it into the login profile once.
+  PROFILE="$HOME/.zprofile"; case "${SHELL:-}" in */bash) PROFILE="$HOME/.bash_profile" ;; esac
+  for b in /opt/homebrew/bin /usr/local/bin; do
+    if [ -x "$b/brew" ] && ! printf '%s' ":$ORIG_PATH:" | grep -q ":$b:"; then
+      if ! grep -qsF "$b/brew shellenv" "$PROFILE"; then
+        printf '\n# Homebrew on PATH (added by GO! Reel Editor setup)\neval "$(%s/brew shellenv)"\n' "$b" >> "$PROFILE"
+        say "  ok added Homebrew to $PROFILE (new sessions see ffmpeg and uv)"
+      fi
+      break
+    fi
+  done
+  if [ -x "$HOME/.local/bin/uv" ] && ! printf '%s' ":$ORIG_PATH:" | grep -q ":$HOME/.local/bin:" \
+     && ! grep -qsF '.local/bin' "$PROFILE"; then
+    printf '\n# uv on PATH (added by GO! Reel Editor setup)\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$PROFILE"
+    say "  ok added uv to $PROFILE"
   fi
 fi
 
