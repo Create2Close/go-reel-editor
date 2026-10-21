@@ -2,7 +2,10 @@
 
 Newest first. Date · area · what · why.
 
-## 0.1.2 · 2026-10-21 · static X-reels, PATH fix
+## 0.1.2 · 2026-10-21 · static X-reels, PATH fix, practice pack
+
+- **Practice pack** (`examples/practice/`): a listicle, a b-roll and an X-reel with Writer output and GO! images, so a
+  member can say "make the practice listicle" before they have content. All three render and pass QA.
 
 (see the first two bullets below)
 

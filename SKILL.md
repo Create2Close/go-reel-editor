@@ -1,6 +1,6 @@
 ---
 name: go-reel-editor
-description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel'. Also 'set me up' / 'install the reel editor' / 'continue setup'."
+description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'set me up' / 'install the reel editor' / 'continue setup'."
 ---
 
 # GO! Reel Editor
@@ -114,6 +114,13 @@ originals). EZ reels: you write `spec.json` there; the video lands in `out/`. Ya
    line: "It's silent on purpose: add a trending sound in the Instagram app when you post."
 5. Changes are one sentence away ("bigger title", "swap the clip", "start the clip 3 seconds later", "try the
    bold look"): edit the spec, re-render, show the new still.
+
+## 3b. Practice (no content of their own yet)
+
+"Make the practice listicle / b-roll / x-reel" (or "let me practice"): copy `examples/practice/<format>/` from this
+skill's folder into their Reels folder as `practice-<format>/`, read its `writer-output.txt`, and build it exactly as in
+§ 3 (the X-reel uses THEIR name, handle and photo from the profile: that's the fun part). Show the still, render, hand
+over. Then: "Now try one with your own Writer output and your own clip."
 
 ## 4. Yap (raw takes -> finished reel; two stops for the member)
 
