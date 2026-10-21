@@ -1,6 +1,6 @@
 ---
 name: go-reel-editor
-description: "GO! Reel Editor: edits short vertical reels on the member's own computer, free. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel'. Also 'set me up' / 'install the reel editor' / 'continue setup'."
+description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel'. Also 'set me up' / 'install the reel editor' / 'continue setup'."
 ---
 
 # GO! Reel Editor

@@ -1,6 +1,6 @@
 # GO! Reel Editor
 
-A Claude skill that edits short vertical reels on your own computer, for free: **X-reels, listicles, b-roll
+A Claude skill that edits short vertical reels on your own computer, at no extra cost beyond your Claude Pro or Max plan: **X-reels, listicles, b-roll
 reels and yaps**. You talk to Claude; Claude does the editing. No editing app, no paid services, nothing
 uploaded anywhere.
 
@@ -20,7 +20,7 @@ Desktop or OneDrive; `C:\Users\<you>\Reels` is perfect) → paste:
 
 > Install the GO! Reel Editor from https://github.com/Create2Close/go-reel-editor and set me up.
 
-Claude installs it, then sets up the free tools it needs (10-15 minutes the first time). Update later with
+Claude installs it, then sets up the open-source tools it needs (10-15 minutes the first time). Update later with
 "update the reel editor".
 
 ## Use it
