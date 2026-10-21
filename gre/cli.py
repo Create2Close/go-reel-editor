@@ -99,6 +99,10 @@ def cmd_doctor(a):
             line(False, f"look {n}: {e}")
     pr = profile()
     print(f"  profile: {json.dumps({k: v for k, v in pr.items()}) if pr else 'not set yet (needed for X-reels: name, handle, avatar)'}")
+    sk = SKILL.parent if SKILL.parent.name == "skills" else Path.home() / ".claude" / "skills"
+    for c, what in (("ez-reel-writer", "writes X-reels, listicles, b-rolls"), ("yap", "writes yap scripts")):
+        print(("  ok   " if (sk / c / "SKILL.md").exists() else "  note ") + f"{c} skill ({what})"
+              + ("" if (sk / c / "SKILL.md").exists() else ": not installed, run setup"))
     from . import transcribe
     print("  yap transcription: " + transcribe.status())
     print("READY" if ok else "NOT READY: fix the MISSING lines (say 'set me up')")

@@ -2,6 +2,16 @@
 
 Newest first. Date · area · what · why.
 
+## 0.1.3 · 2026-10-21 · writers bundled, welcome starter
+
+- **Companion skills**: setup now installs the EZ Reel Writer and the yap writer next to the editor (`companions/`),
+  so one session writes the copy and builds the reel. A member's own copy of either is never overwritten (the
+  editor only updates copies it installed, marked `.from-go-reel-editor`). `gre doctor` reports both.
+- **Welcome starter**: setup ends by telling the member to open a new session and paste "Get me started with the GO!
+  Reel Editor." SKILL.md § 0a answers it: a two-line welcome, a quiet health check, the fewer-pop-ups offer, the
+  seven questions, then three ways to start (Writer output, an idea for the Writer, or the practice pack).
+- From Cyrus's first full test (all four formats passed).
+
 ## 0.1.2 · 2026-10-21 · static X-reels, PATH fix, practice pack
 
 - **Practice pack** (`examples/practice/`): a listicle, a b-roll and an X-reel with Writer output and GO! images, so a

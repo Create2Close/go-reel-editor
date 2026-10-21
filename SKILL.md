@@ -1,6 +1,6 @@
 ---
 name: go-reel-editor
-description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'set me up', 'what's wrong?' / 'install the reel editor' / 'continue setup'."
+description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'get me started with the GO! Reel Editor' (the welcome), 'set me up', 'what's wrong?' / 'install the reel editor' / 'continue setup'."
 ---
 
 # GO! Reel Editor
@@ -37,6 +37,23 @@ two entries to `permissions.allow` in `~/.claude/settings.json` (create the file
 everything already there), with the real skill path:
 `"Bash(uv run -q --project <skill folder> gre:*)"` and `"Bash(bash <skill folder>/setup.sh:*)"`.
 They take effect in the next session.
+
+## 0a. The welcome: "Get me started with the GO! Reel Editor."
+
+Setup ends by telling the member to open a NEW session and paste that sentence. When they do (or say "get me
+started", "welcome me", "what can you do?" in a fresh session), reply in this order, short and warm:
+
+1. **Welcome, in two lines**: "Welcome to the GO! Reel Editor. I write and build your reels: X-reels, listicles,
+   b-roll reels and yaps, right here on your computer. You talk, I edit."
+2. **A quiet check**: run `gre doctor` without showing its output. If it isn't READY, fix that first (§ 0).
+3. **Fewer pop-ups**: the offer in § 0, if it isn't already in their settings.
+4. **The seven questions** of § 0b, in one numbered message.
+5. **How to start**, after they answer: three options as short lines:
+   - "Have EZ Reel Writer output? Paste it and say *make this a listicle* (or b-roll, or x-reel)."
+   - "Nothing written yet? Tell me your idea and I'll write it with the EZ Reel Writer, then build it."
+   - "Just want to see it work? Say *make the practice listicle*."
+   and for talking videos: "Film a yap, drop the takes in a folder and say *edit my yap*. Want a script first?
+   Tell me the idea and I'll write it with the yap skill."
 
 ## 0b. Get to know them (once, right after setup)
 
@@ -86,10 +103,17 @@ EZ Reel Writer output names its own format (ON-SCREEN TEXT / CAPTION / FOOTAGE =
 PUNCHLINE = listicle; a BREAKING / JUST IN / REPORT post + caption = x-reel). Say which format in one line
 before you build. **Read the format file every time**: it holds the rules the member's reel is judged by.
 
-**Never write their copy for them unasked.** You place their words exactly as written (the Writer already
-did the writing). You may flag a rule break ("this list has 16 rows: the format holds 14, which two go?").
-If they have no copy at all, say the EZ Reel Writer (or the yap skill) writes it, or offer to draft it and
-mark it clearly as your draft.
+**Their copy, placed exactly.** When they bring Writer output, you place their words exactly as written. You may
+flag a rule break ("this list has 16 rows: the format holds 14, which two go?").
+
+**No copy yet? The writers are installed with this editor.** Setup puts two companion skills next to it:
+- **`ez-reel-writer`** writes X-reels, listicles and b-roll reels (on-screen text + caption). Use it whenever they
+  bring an idea, an article, data, a story or a voice note instead of finished copy. Give it their profile
+  (`gre profile` prints role, market, audience) so it skips its setup questions. Show its blocks, let them change
+  anything, then build from exactly what they approved.
+- **`yap`** turns an idea into a yap outline or a word-for-word script. If they'll read it word for word, save the
+  approved script as `script.txt` in the yap's folder before they film: the cut and the captions then follow it.
+If either skill is missing (`ls ~/.claude/skills`), re-run setup; never invent their format rules yourself.
 
 ## 2. Where things live
 

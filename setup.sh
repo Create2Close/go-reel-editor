@@ -130,6 +130,22 @@ if [ "$PENDING" = 1 ]; then
   exit 2
 fi
 
+# ── companion skills: the EZ Reel Writer and the yap writer, next to this skill ─────────────────────────────────
+# Installed when missing, updated when this editor put them there, never touching a member's own copy.
+SKILLS_DIR="$(dirname "$SKILL")"
+case "$SKILLS_DIR" in */.claude/skills) ;; *) SKILLS_DIR="$HOME/.claude/skills" ;; esac
+mkdir -p "$SKILLS_DIR"
+for c in ez-reel-writer yap; do
+  src="$SKILL/companions/$c"; dst="$SKILLS_DIR/$c"
+  [ -d "$src" ] || continue
+  if [ ! -e "$dst" ] || [ -f "$dst/.from-go-reel-editor" ]; then
+    rm -rf "$dst" && cp -R "$src" "$dst" && printf 'installed by the GO! Reel Editor\n' > "$dst/.from-go-reel-editor"
+    say "  ok $c skill (writes the copy)"
+  else
+    say "  ok $c skill (your own copy, kept as it is)"
+  fi
+done
+
 # ── the editor's own environment (uv fetches Python 3.11/3.12 itself if the computer has none) ────
 say "  > building the editor's environment (first time: about a minute)..."
 if ! uv sync --project "$SKILL" -q; then
@@ -140,5 +156,7 @@ say ""
 uv run -q --project "$SKILL" gre doctor || exit 1
 mkdir -p "$HOME/.go-reel-editor" && date > "$HOME/.go-reel-editor/setup-ok"
 say ""
-say "SETUP DONE. Next: tell Claude your name, @handle and send a headshot (for X-reels), then make a reel."
+say "SETUP DONE."
+say "Tell the member: open a NEW session in this same folder (the skills load in new sessions) and paste:"
+say "  Get me started with the GO! Reel Editor."
 exit 0

@@ -47,7 +47,9 @@ bash ~/.claude/skills/go-reel-editor/setup.sh
 ```
 
 Follow `setup.sh`'s exit code as `SKILL.md` § 0 describes (1 = the user does one step, 2 = restart Claude).
-When it prints SETUP DONE, tell the user to start a **new** session in their reels folder so the skill loads.
+When it prints SETUP DONE, tell the user to start a **new** session in their reels folder (the skills load in new
+sessions) and paste: **Get me started with the GO! Reel Editor.** Setup also installs the two companion writer
+skills, `ez-reel-writer` and `yap`, unless the user already has their own copies.
 
 **Updating:** `git -C ~/.claude/skills/go-reel-editor pull && bash ~/.claude/skills/go-reel-editor/setup.sh`
 (a tarball install: download it again over the old folder).
