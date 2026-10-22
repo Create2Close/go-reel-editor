@@ -10,7 +10,7 @@ Study the pattern each one uses before writing.
 
 ---
 
-## Example 1: Textbook 3-line tease (Steve Beskid, GO coach)
+## Example 1: Textbook 3-line tease (GO coach)
 
 ```
 ON-SCREEN TEXT (staggered ~2.5s apart):
@@ -20,14 +20,14 @@ I was a terrible leader
 Here's what I got wrong👇
 ```
 
-- Footage: Steve in a leather armchair, fidgeting, not talking. 7.5s.
+- Footage: the coach in a leather armchair, fidgeting, not talking. 7.5s.
 - Caption opens with NEW info: "Before I started my own company…" → vulnerable story
   about failing his assistant. Soft close.
 - Result: small reach but the highest comment rate of the analyzed set (0.30%) and a
   1.21% like rate. Vulnerability converts.
 - Lesson: the twist line ("I was a terrible leader") gets the boldest visual treatment.
 
-## Example 2: 2-line list promise (Amir Syed, GO coach), 56.6K plays
+## Example 2: 2-line list promise (GO coach), 56.6K plays
 
 ```
 ON-SCREEN TEXT:
@@ -35,14 +35,14 @@ ON-SCREEN TEXT:
 Read the caption below ⬇️                    [fades in ~0:03.5]
 ```
 
-- Footage: Amir reading a physical book: which IS habit #2 on his list. Proof, not
+- Footage: the coach reading a physical book: which IS habit #2 on his list. Proof, not
   wallpaper.
 - Caption: all 21 habits, numbered, each 1–2 lines, concrete ("Role play every single
   week", "Record your loan consultations… watch them back like game tape").
 - Result: 1.59% like rate: belief/value content earns approval.
 - Lesson: big odd number ("21") signals depth; on-theme footage sells authenticity.
 
-## Example 3: Setup + twist, no tease line (Amir Syed, GO coach)
+## Example 3: Setup + twist, no tease line (GO coach)
 
 ```
 ON-SCREEN TEXT (static, two lines):
@@ -58,7 +58,7 @@ and your business won't notice.
 - Lesson: on deeply personal belief content, the emotional gap replaces the tease line,
   and no CTA outperforms any CTA.
 
-## Example 4: List promise + hard keyword CTA (Kari Cummings), 53.8K plays
+## Example 4: List promise + hard keyword CTA (a Realtor), 53.8K plays
 
 ```
 ON-SCREEN TEXT (static, one block):
@@ -76,7 +76,7 @@ because of these 4 things
 
 ## Advanced variant (reference only: don't default to it)
 
-Jimmy Conover's 4.83M-play reel: one 27-second sentence split across 11 sequential
+A Realtor's 4.83M-play reel: one 27-second sentence split across 11 sequential
 lower-third text lines, each completing a clause over a matching family-footage clip
 ("my wife told me she wanted to leave Arizona… / we could have 4 seasons, / live a
 slower pace of life, / …"). Viewers can't exit mid-sentence. 4.96% like rate, growth

@@ -43,6 +43,5 @@ Two columns ("RENTING vs OWNING", "can control vs can't"): `"columns": [{"header
 - Compliance: payments, rates, down payment and term are trigger terms. Remind the member to run a money table
   past compliance before posting.
 
-Examples (GO coaches): Rebecca Foote "History of Mortgage Rates" (2.35M plays), Heath Barnes "Your Bank hopes you
-NEVER learn this" with "APPLY TO PRINCIPAL ONLY" (2.25M), Daniel Solis "How much salary to afford a home" (a
-lookup table, "Save this for later").
+Examples (GO coaches): "History of Mortgage Rates" (2.35M plays), "Your Bank hopes you NEVER learn this" with
+"APPLY TO PRINCIPAL ONLY" (2.25M), "How much salary to afford a home" (a lookup table, "Save this for later").

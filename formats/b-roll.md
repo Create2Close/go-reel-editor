@@ -37,6 +37,6 @@ black box), `outline` (no box, white with a dark edge).
 - The caption is shown in the chat to copy (SKILL.md § 5c) exactly as written. It opens with NEW information: if it repeats
   the tease, say so.
 
-Examples (GO coaches): Amir Syed "21 habits to be incredible at sales:" over him reading (all 21 in the caption);
-"One day, you'll disappear for a month… / and your business won't notice." over his family trip (no CTA, best
-engagement); Steve Beskid "I only have one regret in business: / I was a terrible leader / Here's what I got wrong 👇".
+Examples (GO coaches): "21 habits to be incredible at sales:" over the coach reading (all 21 in the caption);
+"One day, you'll disappear for a month… / and your business won't notice." over a family trip (no CTA, best
+engagement); "I only have one regret in business: / I was a terrible leader / Here's what I got wrong 👇".

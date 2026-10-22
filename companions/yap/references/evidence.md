@@ -7,16 +7,13 @@ TikTok, conducted August 2026. Outlier score = a video's plays ÷ that creator's
 **Corpus definition (revised 2026-08-26 at the project owner's direction):** a true yap is one
 creator talking directly TO THE VIEWER for the whole video — scripted or not, edited or not.
 The original 98-outlier set also contained **27 acted dialogue skits** (roleplay two-handers,
-mostly @anutterhomeloan and @mortgage_mandy), **5 lifestyle vlogs**, and **2 other non-yaps**;
+mostly from two mortgage creators), **5 lifestyle vlogs**, and **2 other non-yaps**;
 those were classified out (see `format_classification.json` in the research database). They are
 real, working formats — but different formats, with different mechanics, and this skill does not
 teach them. Stats below are on the clean 64 unless marked otherwise.
 
-Creators studied — mortgage/real estate: @theonithelender, @shivpeter, @mortgage_mandy,
-@unclemortgage, @mymortgageadvisor, @mortgageswithpower, @anutterhomeloan, @nateloans.
-Business/creator/marketing (the topic-agnostic replication set, added 2026-08-26 at ≥2.0x bar):
-@amirsyed, @shannonmckinstrie, @minolee.mp4, @it.is.joao, @lifewith.tripp,
-@laurenfoisy.marketing. Patterns below held across both groups unless noted.
+Creators studied: 8 mortgage/real estate creators, plus 6 business/creator/marketing creators (the
+topic-agnostic replication set, added 2026-08-26 at ≥2.0x bar). Patterns below held across both groups unless noted.
 
 ---
 
@@ -93,10 +90,10 @@ First-frame analysis paired with the words spoken in the first 3 seconds. On the
 | NONE | 24 |
 
 - **The verbatim REPEAT is a legitimate system, not a failure** — 16 of 100, including 190x,
-  144x, 49x, 47x, and 40x outliers, and one creator (@it.is.joao) who runs a locked
+  144x, 49x, 47x, and 40x outliers, and one creator who runs a locked
   white-on-black pill of his opening line on every video. It works when the first line IS the
   compressed claim; transcribing a weak opener is what fails.
-- The top of the diverse corpus also shows a **no-designed-text mode**: @lifewith.tripp's 190x
+- The top of the diverse corpus also shows a **no-designed-text mode**: one creator's 190x
   runs only word-at-a-time karaoke captions over striking footage — the scene is the hook.
 - Auto-captions show **no** performance correlation — furniture, not a hook.
 - (CHARACTER_LABEL / "Part 2" series cards existed only on the excluded skits — high floor,

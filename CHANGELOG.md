@@ -2,6 +2,15 @@
 
 Newest first. Date · area · what · why.
 
+## 0.1.5 · 2026-10-22 · privacy pass
+
+- **No real people in the repo**: the practice b-roll photo (an astronaut with a real face) is replaced by NASA's
+  public-domain "View of Moonset" (iss061e003881). The listicle and X-reel practice images are GO! graphics with no
+  people. Credits in `examples/practice/README.md`.
+- **No names**: the format docs and the bundled writers' examples describe the reels (plays, copy, mechanics) without
+  naming the coaches or creators behind them; the yap research notes list creator counts, not handles.
+- Scanned the full history for keys and tokens: none.
+
 ## 0.1.4 · 2026-10-22 · everything in the chat, quick previews, captions to copy, Team/Enterprise
 
 - **The chat is the review** (SKILL.md § 5b): stills, drafts, the yap's numbered transcript, caption lines, title
@@ -47,7 +56,7 @@ Newest first. Date · area · what · why.
   later session finds ffmpeg and uv. Before, a fresh Homebrew install or a second Mac user saw "uv: command not found".
 - **X-reels are static** (Cyrus, 2026-10-21): no zoom, 6-7 s, the whole card centred inside the reel safe zone
   (top 14 %, bottom 35 %, sides 6 % clear: x65-1015, y300-1248), checked on every render and in the tests.
-- **Clean-server test** (RunPod, bare Ubuntu 24.04, no ffmpeg/uv/Python): setup to READY with no manual steps, 24 tests
+- **Clean-server test** (a bare Ubuntu 24.04 cloud server, no ffmpeg/uv/Python): setup to READY with no manual steps, 24 tests
   pass, the full yap line (transcribe on GPU, cut, draft, captions, final) QA PASS at -17.8 LUFS. Two fixes from it:
   Linux setup now installs ffmpeg itself (root / passwordless sudo); the transcriber ignores a machine-wide
   `HF_HUB_ENABLE_HF_TRANSFER=1` that crashed the model download.

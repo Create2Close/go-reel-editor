@@ -9,7 +9,7 @@ Six real listicle reels analyzed frame-by-frame. Study the shape each one uses.
 
 ---
 
-## Example 1: Data story + opinion punchline (Rebecca Foote, GO coach), 2.35M plays
+## Example 1: Data story + opinion punchline (GO coach), 2.35M plays
 
 ```
 TITLE: History of Mortgage Rates
@@ -33,7 +33,7 @@ PUNCHLINE (yellow box): People waited in 1985 when rates were 13%. Imagine waiti
 - 5.2 plays per viewer (list unreadable in one pass), 196 comments (punchline = the
   argument starter).
 
-## Example 2: List as story + actionable kicker (Heath Barnes, GO coach), 2.25M plays
+## Example 2: List as story + actionable kicker (GO coach), 2.25M plays
 
 ```
 TITLE: Your Bank hopes you NEVER learn this 💰🏠
@@ -44,11 +44,11 @@ A 30 yr Mortgage = 30 years 😱
 [...]
 PUNCHLINE (red box): "APPLY TO PRINCIPAL ONLY"
 ```
-- Footage: Heath walking down his office staircase. 6.8s, all text static from frame 1.
+- Footage: the coach walking down an office staircase. 6.8s, all text static from frame 1.
 - The red box is an exact script/action: the SAVE trigger.
 - Lesson: the list has a narrative arc, and the kicker is the shortest line.
 
-## Example 3: Maximum compression story-list (Shawn Kaplan), 14.3M views
+## Example 3: Maximum compression story-list (a finance creator), 14.3M views
 
 ```
 LIST (one black box, 10 lines, no title needed):
@@ -69,7 +69,7 @@ CAPTION (entire): Follow the plan.
 - Top comment (252 likes) is an expert correction, provocative simplification drives
   debate, but every line must be defensibly true.
 
-## Example 4: Ranking / debate bait (Brooks Kelly, GO coach)
+## Example 4: Ranking / debate bait (GO coach)
 
 ```
 TITLE: Top 5 Public Golf Courses in Dallas Fort Worth:
@@ -80,7 +80,7 @@ LIST: 1. Cedar Crest / 2. Indian Creek / 3. Buffalo Creek / 4. ... / 5. ...
 - Lesson: numbered rankings are opinions in disguise; viewers rank-correct in comments.
 - Local + non-industry topic = wide-but-local top of funnel.
 
-## Example 5: Utility lookup table (Daniel Solis, GO coach)
+## Example 5: Utility lookup table (GO coach)
 
 ```
 TITLE (green pill): How much salary to afford a home
@@ -96,7 +96,7 @@ CAPTION: Save this for later! Follow for more!
 - 0 comments and that's fine: lookup tables are save-bait, not debate-bait.
 - Lesson: one consistent row template makes 33 numbers scannable.
 
-## Example 6: Utility checklist (Heath Barnes, GO coach)
+## Example 6: Utility checklist (GO coach)
 
 ```
 TITLE: WHAT TO DO IMMEDIATELY AFTER BUYING A HOUSE
