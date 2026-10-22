@@ -31,8 +31,10 @@ If `~/.go-reel-editor/setup-ok` is missing, or the member says "set me up", "ins
 - **2** Windows needs a restart: "Close Claude completely, open it again in the same folder, and say
   *continue setup*."
 
-**Fewer pop-ups (offer once, after setup).** Every editor command otherwise asks "Allow?". Ask: "Want me to stop
-asking permission for the editor's own commands? (Only this editor's commands, nothing else.)" On a yes, add these
+**Fewer pop-ups (only if they were asked "Allow?").** Claude Code's default Auto mode runs the editor's commands
+without asking, so most members never see a prompt: don't raise it. If they did get "Allow?" prompts during setup (or
+say they're annoying), ask: "Want me to stop asking permission for the editor's own commands? (Only this editor's
+commands, nothing else.)" On a yes, add these
 two entries to `permissions.allow` in `~/.claude/settings.json` (create the file or the list if missing; keep
 everything already there), with the real skill path:
 `"Bash(uv run -q --project <skill folder> gre:*)"` and `"Bash(bash <skill folder>/setup.sh:*)"`.
@@ -46,7 +48,7 @@ started", "welcome me", "what can you do?" in a fresh session), reply in this or
 1. **Welcome, in two lines**: "Welcome to the GO! Reel Editor. I write and build your reels: X-reels, listicles,
    b-roll reels and yaps, right here on your computer. You talk, I edit."
 2. **A quiet check**: run `gre doctor` without showing its output. If it isn't READY, fix that first (§ 0).
-3. **Fewer pop-ups**: the offer in § 0, if it isn't already in their settings.
+3. **Fewer pop-ups**: only if they were asked "Allow?" during setup (§ 0). In Auto mode, skip it.
 4. **The seven questions** of § 0b, in one numbered message.
 5. **How to start**, after they answer: three options as short lines:
    - "Have EZ Reel Writer output? Paste it and say *make this a listicle* (or b-roll, or x-reel)."

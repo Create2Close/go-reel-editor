@@ -10,7 +10,8 @@ Newest first. Date · area · what · why.
 - **Welcome starter**: setup ends by telling the member to open a new session and paste "Get me started with the GO!
   Reel Editor." SKILL.md § 0a answers it: a two-line welcome, a quiet health check, the fewer-pop-ups offer, the
   seven questions, then three ways to start (Writer output, an idea for the Writer, or the practice pack).
-- From Cyrus's first full test (all four formats passed).
+- From Cyrus's first full test (all four formats passed). Auto mode is the default permission mode, so the
+  "stop asking Allow?" offer now only comes up if the member was actually prompted.
 
 ## 0.1.2 · 2026-10-21 · static X-reels, PATH fix, practice pack
 
