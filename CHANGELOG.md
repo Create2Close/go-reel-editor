@@ -2,6 +2,12 @@
 
 Newest first. Date · area · what · why.
 
+## 0.1.6 · 2026-10-22 · house photos for the practice pack
+
+- **Practice images are real-estate scenes, not Zoom backgrounds**: the listicle now builds over a neighbourhood
+  street from above (`neighborhood.jpg`) and the X-reel's news image is a house front (`house.jpg`), both generated
+  stock-style photos with no people, signs or text. The GO! Zoom backgrounds (`office.jpg`, `news-photo.jpg`) are gone.
+
 ## 0.1.5 · 2026-10-22 · privacy pass
 
 - **No real people in the repo**: the practice b-roll photo (an astronaut with a real face) is replaced by NASA's
