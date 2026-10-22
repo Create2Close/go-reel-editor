@@ -47,7 +47,7 @@ Flag (don't silently cut) a post-CTA sign-off and meta lines: they usually go at
 ## Notes after a draft (lock-and-patch)
 
 A note changes only its spot. "Put back R3" adds that range back; "cut 0:12-0:14" removes the words playing
-then (find them in the draft's .md: L lines carry draft times); "start on L5" moves L5 to the front. Never
+then (find them in the draft's numbered transcript: `edit/drafts/draft-vN.md` has the W numbers; L lines carry draft times); "start on L5" moves L5 to the front. Never
 re-decide the rest of the cut while fixing one note: a simple video must not take seven drafts.
 
 ## Camera moves (automatic)

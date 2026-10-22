@@ -3,7 +3,8 @@
   gre yap start <folder>                  find the clips, transcribe (once), propose the cut (keep.json), write the
                                           numbered transcript (words.md)
   gre yap cut <folder>                    keep.json -> cuts.json (pauses tightened, edges on the waveform)
-  gre yap draft <folder> [--label v1]     a review copy: timecode burned in + the numbered transcript (L#/R#)
+  gre yap draft <folder> [--label v1]     a quick review copy (clock burned in, plays in the chat) + the numbered
+                                          transcript (L#/R#), printed for the chat
   gre yap captions <folder> [--redo]      write/check captions.txt -> captions.json + a preview sheet
   gre yap title <folder> "line" ["line"]  fit the title above the head -> title.json + a frame-1 preview
   gre yap final <folder>                  the finished reel + QA
@@ -181,14 +182,17 @@ def transcript_sheet(flat, cuts, keep, out_md, label):
     fmt = lambda t: f"{int(t // 60)}:{t % 60:04.1f}"
     md = [f"# Draft {label}: numbered transcript", "",
           "Give notes against THIS draft's clock (top-left of the video): `cut 0:12.4-0:14.0`, `drop L7`, "
-          "`put back R2`, `start on L5`. Say **locked** when the cut is right.", "", "## Kept (draft time)", ""]
+          "`put back R2`, `start on L5`. Say **locked** when the cut is right.", "", "**Kept** (draft time)", ""]
     md += [f"- **L{i}** {fmt(l[0]['start'])} {' '.join(p['w'] for p in l if p['w'])}" for i, l in enumerate(lines, 1)]
-    md += ["", "## Removed (clip, time in the clip, why)", ""]
+    md += ["", "**Removed** (clip, time in the clip, why)", ""]
+    chat = list(md)
     for i, r in enumerate(removed, 1):
         reason = why.get(r[0]["i"]) or ("filler" if all(wordsmod.norm(x["w"]) in wordsmod.FILLERS for x in r) else "cut")
-        md.append(f"- **R{i}** {r[0]['clip']} {fmt(r[0]['start'])} · {reason} · W{r[0]['i']}-W{r[-1]['i']}: "
-                  f"{' '.join(x['w'] for x in r)}")
+        said = " ".join(x["w"] for x in r)
+        md.append(f"- **R{i}** {r[0]['clip']} {fmt(r[0]['start'])} · {reason} · W{r[0]['i']}-W{r[-1]['i']}: {said}")
+        chat.append(f"- **R{i}** {Path(str(r[0]['clip'])).stem} {fmt(r[0]['start'])} · {reason}: {said}")
     Path(out_md).write_text("\n".join(md) + "\n", encoding="utf-8")
+    return "\n".join(chat) + "\n"
 
 
 def cmd_draft(a):
@@ -202,9 +206,12 @@ def cmd_draft(a):
     title = None if a.no_captions else _title(E, lk)
     label = a.label or _next_label(E)
     out = E / "drafts" / f"draft-{label}.mp4"
-    render(cuts, out, moves=moves, captions=caps, title=title, label=label)
-    transcript_sheet(flat, cuts, keep, out.with_suffix(".md"), label)
-    print(f"draft: {out}\nnumbered transcript: {out.with_suffix('.md')}")
+    render(cuts, out, moves=moves, captions=caps, title=title, label=label, preview=True)
+    sheet = transcript_sheet(flat, cuts, keep, out.with_suffix(".md"), label)
+    print(f"draft: {out}\n")
+    print("=== PASTE INTO THE CHAT (the member reviews this, not a file) ===")
+    print(sheet.replace("# Draft", "### Draft", 1))
+    print("=== END ===")
 
 
 def _next_label(E):

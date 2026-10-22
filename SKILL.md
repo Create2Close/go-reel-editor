@@ -1,6 +1,6 @@
 ---
 name: go-reel-editor
-description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude Pro or Max plan. Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'get me started with the GO! Reel Editor' (the welcome), 'set me up', 'what's wrong?' / 'install the reel editor' / 'continue setup'."
+description: "GO! Reel Editor: edits short vertical reels on the member's own computer, at no extra cost beyond their Claude plan (Pro, Max, Team or Enterprise). Four formats: X-REEL (a news story as an X-post card), LISTICLE (title + list + punchline over one clip), B-ROLL (2-3 lines of on-screen text over a real clip, payoff in the caption) and YAP (one person talking to the phone: cut, captions, title). Use it whenever someone wants a reel, a video, a listicle, an x-reel, a b-roll, a yap or a talking video EDITED or BUILT from their clips, footage, script or EZ Reel Writer output: 'make this a listicle', 'turn this into a b-roll reel', 'build the x-reel', 'edit my yap', 'cut this video', 'add captions', 'render my reel', 'make the practice listicle / b-roll / x-reel'. Also 'get me started with the GO! Reel Editor' (the welcome), 'set me up', 'what's wrong?' / 'install the reel editor' / 'continue setup'."
 ---
 
 # GO! Reel Editor
@@ -125,19 +125,21 @@ originals). EZ reels: you write `spec.json` there; the video lands in `out/`. Ya
 
 ## 3. X-reel, listicle, b-roll (minutes)
 
-1. Write `spec.json` from their copy, exactly (spec shapes are at the top of `gre/listicle.py`, `gre/broll.py`,
-   `gre/xreel.py`). Footage paths are relative to the spec.
+1. Write the spec from their copy, exactly, named after the reel (`austin-400k-listicle.json`: the video comes
+   out as `out/austin-400k-listicle.mp4`; `spec.json` below means that file). Spec shapes are at the top of
+   `gre/listicle.py`, `gre/broll.py`, `gre/xreel.py`. Footage paths are relative to the spec.
    - **listicle**: `{"clip", "title", "items": [...] or "columns": [...], "small": "Source: ...", "punchline"}`
    - **b-roll**: `{"clip", "blocks": [{"text", "style"}]}`: styles come from the look (`white`, `black`,
      `outline`, ...). The usual pattern: setup line `white`, twist and tease `black`.
    - **x-reel**: `{"text": "BREAKING: ...\n\nHere's ... 👇", "image": "news.jpg"}`: the post text is the hook
      label + 1-2 hook lines + the tease line. The long sectioned caption is NOT on screen.
 2. `gre preview spec.json` makes a still: look at it (Read the PNG). Check: every word as written, nothing
-   cut off, readable, text in the middle band.
+   cut off, readable, text in the middle band. Show it in the chat (§ 5b).
 3. `gre <listicle|broll|xreel> spec.json [--look clean|bold|serif]`, then `gre qa out/<name>.mp4`.
-4. Hand over: the video's location (open the folder for them: `open <dir>` on Mac, `explorer.exe <dir>` on
-   Windows), the caption to paste (write it to `out/<name>.caption.txt` exactly as the Writer gave it), and one
-   line: "It's silent on purpose: add a trending sound in the Instagram app when you post."
+4. Hand over IN THE CHAT (§ 5b): the video, playing right there; one line on where it's saved (open the folder
+   when they're ready to post: `open <dir>` on Mac, `explorer.exe <dir>` on Windows); "Want the post caption?
+   Say *caption* and I'll put it here to copy." (§ 5c); and one line: "It's silent on purpose: add a trending
+   sound in the Instagram app when you post."
 5. Changes are one sentence away ("bigger title", "swap the clip", "start the clip 3 seconds later", "try the
    bold look"): edit the spec, re-render, show the new still.
 
@@ -162,24 +164,28 @@ Read `formats/yap.md` first: its cut rules are the job.
    order; every judgement cut gets an entry in `cuts` with a short reason ("aside", "sign-off after the CTA",
    "meta: stick with me"). Then `gre yap cut <folder>` (pauses get tightened and edges measured on the
    waveform automatically).
-3. **Draft.** `gre yap draft <folder>` renders `edit/drafts/draft-v1.mp4` with a clock burned in, and
-   `draft-v1.md`, the numbered transcript (L# kept lines, R# removed runs with reasons). Give them both, and
-   say what you cut and why in 2-4 bullets. **STOP 1: they watch it.** Notes come back as "put back R3",
+3. **Draft.** `gre yap draft <folder>` renders a quick review copy, `edit/drafts/draft-v1.mp4` (small, fast,
+   a clock burned in), and prints the numbered transcript between `=== PASTE INTO THE CHAT ===` and `=== END ===`
+   (L# kept lines with draft times, R# removed runs with reasons). In ONE reply: the draft playing in the chat
+   (§ 5b), that transcript pasted as it is, and what you cut and why in 2-4 bullets. Never send them to the .md
+   file: the conversation is the review. **STOP 1: they watch it.** Notes come back as "put back R3",
    "cut 0:12-0:14", "start on L5", "drop the part about my dog". Change ONLY the spot each note names in
    `keep.json` (never re-decide the whole cut), re-run cut + draft (v2, v3...). Until they say it's good
    ("locked", "good", "perfect"), nothing else happens.
 4. **Captions.** `gre yap captions <folder>` writes a first chunking to `edit/captions.txt` and checks it.
    Read it and fix it by hand: natural phrases, one line each, **bold** on 1 word every ~5 s (the stressed
    word), mishears fixed in the text. Run it again until no `FIX` lines remain. Look at
-   `edit/captions-preview.png`. Render `gre yap draft` again so they see captions moving.
+   `edit/captions-preview.png` and show it in the chat. Render `gre yap draft` again and show that draft so they
+   see the captions moving.
    **STOP 2: they approve the captions** (or send text fixes: apply, re-run).
 5. **Title.** The visual hook: on screen from frame 1 for 3.5 s, 3-8 words, ADDS to what they say in the
    first sentence (never repeats it). If their script has a visual hook, that is option 1. Offer 5-6 options
    in three flavours (contrast, curiosity, straight to the viewer), recommend one and say why. When they pick:
-   `gre yap title <folder> "line one" ["line two"]`, look at `edit/title-preview.png` (the thumbnail). If it
-   says NO CLEAR SPACE, offer a one-line version.
-6. **Final.** `gre yap final <folder>`: the finished reel (sound levelled, -17 LUFS into a -6 dB limiter) +
-   QA. Hand it over like an EZ reel, with the post caption if they have one.
+   `gre yap title <folder> "line one" ["line two"]`, look at `edit/title-preview.png` (the thumbnail) and show
+   it in the chat. If it says NO CLEAR SPACE, offer a one-line version.
+6. **Final.** `gre yap final <folder>`: the finished reel at full quality (sound levelled, -17 LUFS into a
+   -6 dB limiter) + QA. Hand it over like an EZ reel: playing in the chat, where it's saved, and the caption
+   offer (§ 5c).
 
 Camera moves are automatic: every cut alternates a wide and a tight framing (100-103 % / 113-116 %) so jump
 cuts read as intentional. Scale it down only if they ask ("less zoom": edit `edit/moves.json`, set
@@ -193,6 +199,32 @@ cuts read as intentional. Scale it down only if they ask ("less zoom": edit `edi
 - After every render, say what you checked and what you'd change, in two or three lines. Show stills.
 - Never post anything anywhere. Never upload their videos. Everything stays on their computer.
 - They post from their phone: suggest AirDrop (Mac to iPhone), Google Drive, or emailing it to themselves.
+
+## 5b. Everything happens in the chat
+
+The member works with you, not with files. Everything they review appears in this conversation: stills,
+draft videos, the numbered transcript, caption lines, title options, the finished reel. Never ask them to open
+a .md, .txt or .json file.
+
+- **Stills and videos:** if you have a tool that sends a file to the person to see (in the Claude desktop app it
+  is `SendUserFile`: pass the full path and `display: "render"`), send every still and every video with it, so
+  it opens and plays right there. Without such a tool, give a clickable link with the full path:
+  `[Draft v1](/Users/me/Reels/buydown-yap/edit/drafts/draft-v1.mp4)`.
+- **Yap drafts are quick previews** (half size, fast encode) so they arrive in seconds-to-minutes and play
+  smoothly in the chat. Only `gre yap final` renders full quality. EZ reels are short enough to render at full
+  quality straight away.
+
+## 5c. The post caption (in the chat, to copy)
+
+When they ask ("caption", "what do I post with it?", "give me the caption"), and offered once at every hand-over,
+put the post caption in the chat inside a fenced code block (``` ... ```) so it has a copy button, and nothing
+else in that block.
+
+- **EZ reels:** the caption from their EZ Reel Writer output, word for word.
+- **Yap:** the caption from their yap script if it has one. Otherwise write one from what they said in the
+  video: first line = the hook as a claim, 2-4 short lines that land the point, their CTA from the video if
+  there is one, no hashtag wall. Say it's a draft they can change ("shorter", "add my phone number") and
+  update it in the chat.
 
 ## 6. Looks
 

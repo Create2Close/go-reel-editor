@@ -24,7 +24,7 @@ above the image; `"mode": "light"` gives the white version.
 - **The image sells the headline.** A real news photo of the place, the building, the person. Landscape crops
   to the card width; a tall photo is centre-cropped.
 - **The caption** (from the Writer: sectioned, ending "What this means for [market] Realtors" and "Bottom
-  line", under 1,800 characters) goes in `out/<name>.caption.txt`, never on screen.
+  line", under 1,800 characters) is the post caption: shown in the chat to copy (SKILL.md § 5c), never on screen.
 - **Static, 6-7 s, silent.** No slow zoom, ever (Cyrus, 2026-10-21).
 - **The whole card (avatar, name, text, image) sits inside the reel safe zone**: the top 14 %, bottom 35 % and
   sides 6 % stay clear (x65-1015, y300-1248 on 1080x1920), which also clears the Facebook 4:5 and Instagram 3:4

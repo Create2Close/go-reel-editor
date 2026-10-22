@@ -1,6 +1,6 @@
 # GO! Reel Editor
 
-A Claude skill that edits short vertical reels on your own computer, at no extra cost beyond your Claude Pro or Max plan: **X-reels, listicles, b-roll
+A Claude skill that edits short vertical reels on your own computer, at no extra cost beyond your Claude plan (Pro, Max, Team or Enterprise): **X-reels, listicles, b-roll
 reels and yaps**. You talk to Claude; Claude does the editing. No editing app, no paid services, nothing
 uploaded anywhere.
 
@@ -9,7 +9,7 @@ and b-rolls) and the **yap** skill (writes yaps): the writers write, the editor 
 
 ## What you need
 
-- A Claude **Pro or Max** plan and the **Claude desktop app** (its **Code** tab, set to **Local**).
+- A Claude **Pro, Max, Team or Enterprise** plan (on Team or Enterprise, your admin must have Claude Code turned on) and the **Claude desktop app** (its **Code** tab, set to **Local**).
 - A Mac or a Windows PC. About 1 GB free for the editor; about 4 GB more the first time you edit a yap.
 - Mac only: Homebrew (the setup tells you the one line to paste if you don't have it).
 

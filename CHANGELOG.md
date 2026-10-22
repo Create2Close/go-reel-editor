@@ -2,6 +2,22 @@
 
 Newest first. Date · area · what · why.
 
+## 0.1.4 · 2026-10-22 · everything in the chat, quick previews, captions to copy, Team/Enterprise
+
+- **The chat is the review** (SKILL.md § 5b): stills, drafts, the yap's numbered transcript, caption lines, title
+  options and the finished reel all appear in the conversation. Videos and stills go out with the desktop app's
+  file tool so they open and play there (a clickable link otherwise). Members never open a .md or .txt.
+- **Yap drafts are quick previews**: `gre yap draft` renders 540x960 with a fast encode (veryfast, CRF 26), so a
+  review copy arrives fast and plays smoothly in the chat; only `gre yap final` renders full quality. It prints the
+  numbered transcript for the chat (clip names, no internal word numbers); the full sheet stays in `edit/drafts/`
+  for Claude.
+- **Post caption on request** (§ 5c): offered at every hand-over and shown in a code block with a copy button. EZ
+  reels use the Writer's caption word for word; a yap uses its script's caption or a drafted one. The
+  `out/<name>.caption.txt` file is gone.
+- **Reel naming**: the spec is named after the reel, so the video is `out/<reel>.mp4`, not `out/spec.mp4` (flagged by
+  both the Sonnet and the Haiku practice runs, which otherwise passed QA word for word).
+- **Plans**: Pro, Max, Team or Enterprise (Team/Enterprise: the admin turns Claude Code on). From Cyrus's install test.
+
 ## 0.1.3 · 2026-10-21 · writers bundled, welcome starter
 
 - **Companion skills**: setup now installs the EZ Reel Writer and the yap writer next to the editor (`companions/`),

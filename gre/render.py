@@ -95,7 +95,10 @@ def build_audio(segs, clips, nframes, tmp, highpass=80):
     return wav
 
 
-def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="auto", highpass=80, log=print):
+def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="auto", highpass=80, log=print,
+           preview=False):
+    """preview=True: a quick, light review copy (540x960, fast encode) that plays in the chat; the final is full
+    quality."""
     need("ffmpeg")
     segs = cuts["segments"]
     clips = cuts["clips"]
@@ -118,11 +121,12 @@ def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="a
     enc = subprocess.Popen(
         ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
          "-i", "pipe:0", "-i", str(wav), "-filter_complex",
-         f"[0:v]scale=in_range=pc:out_range=tv:out_color_matrix=bt709,format=yuv420p,"
+         f"[0:v]{'scale=540:960:flags=area,' if preview else ''}scale=in_range=pc:out_range=tv:out_color_matrix=bt709,format=yuv420p,"
          f"setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv[v];[1:a]volume={g}dB,{LIMITER}[a]",
-         "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-profile:v", "high",
+         "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "veryfast" if preview else "medium",
+         "-crf", "26" if preview else "17", "-profile:v", "high",
          "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
-         "-color_range", "tv", "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-frames:v", str(total),
+         "-color_range", "tv", "-c:a", "aac", "-b:a", "160k" if preview else "256k", "-ar", "48000", "-frames:v", str(total),
          "-movflags", "+faststart", str(out)], stdin=subprocess.PIPE)
     infos = {}
     seq, nbytes = 0, W * H * 3

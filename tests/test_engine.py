@@ -189,7 +189,8 @@ def talk(tmp):
     return p
 
 
-def test_yap_cut_and_render_keep_sound_on_picture(tmp, talk):
+@pytest.mark.parametrize("preview", [False, True])
+def test_yap_cut_and_render_keep_sound_on_picture(tmp, talk, preview):
     flat = [{"w": f"word{i}.", "start": float(i), "end": i + 0.6, "ci": 0, "i": i, "clip": "talk.mov"} for i in range(6)]
     keep = {"segments": [{"from": 0, "to": 1}, {"from": 3, "to": 5}]}
     segs = cut.build(flat, keep, [str(talk)])
@@ -199,8 +200,9 @@ def test_yap_cut_and_render_keep_sound_on_picture(tmp, talk):
     lk = load_look("clean")
     caps = captions.images([{"text": "word one", "start": 0.0, "end": 1.0}], lk)
     t = title.layer({"lines": ["A test title"], "size": 80, "top": 330}, lk)
-    render.render(cuts, out, captions=caps, title=t, label="v1", log=lambda *_: None)
+    render.render(cuts, out, captions=caps, title=t, label="v1", log=lambda *_: None, preview=preview)
     v = video_info(out)
+    assert (v["w"], v["h"]) == ((540, 960) if preview else (1080, 1920))   # drafts are light previews
     n = sum(render.frame_plan(segs))
     assert abs(v["duration"] - n / FPS) < 0.05
     a = json.loads(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
