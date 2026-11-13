@@ -233,12 +233,18 @@ def test_personal_look_and_logo_colours(tmp, avatar):
 
 
 def test_xreel_is_static_and_inside_the_reel_safe_zone(tmp, avatar):
-    """Cyrus 2026-10-21: no slow zoom, 6-7 s, the card inside the reel safe zone (top 14 %, bottom 35 %, sides 6 %)."""
-    from gre.common import REEL_LEFT, REEL_RIGHT, REEL_TOP, REEL_BOTTOM
+    """Cyrus 2026-10-21: no slow zoom, 6-7 s, the text inside the reel safe zone (top 14 %, bottom 35 %, sides 6 %).
+    Cyrus 2026-11-13: the photo may run below it, to the feed-safe line, so a tall photo is not cut to a strip."""
+    from gre.common import REEL_LEFT, REEL_RIGHT, REEL_TOP, REEL_BOTTOM, REEL_PHOTO_BOTTOM
     tall = tmp / "tall.jpg"
     Image.new("RGB", (900, 1600), (180, 60, 60)).save(tall)
     spec = {"text": "BREAKING: A long test headline about a very large build in a fast-growing Texas suburb.\n\n"
                     "Here's what it means 👇", "image": str(tall), "name": "A Very Long Display Name Indeed"}
+    card = xreel.card(spec, load_look("clean"))
+    photo_top = card.info["photo_top"]
+    text = card.convert("L").point(lambda v: 255 if v > 12 else 0).crop((0, 0, W, photo_top)).getbbox()
+    assert text[0] >= REEL_LEFT and text[1] >= REEL_TOP and text[2] <= REEL_RIGHT and text[3] <= REEL_BOTTOM, text
+    assert REEL_PHOTO_BOTTOM - photo_top > 600, "a tall photo keeps most of its height"
     out = tmp / "xreel-static.mp4"
     xreel.render(spec, load_look("clean"), str(out), log=lambda *_: None)
     assert 6.0 <= video_info(out)["duration"] <= 7.0
@@ -253,4 +259,4 @@ def test_xreel_is_static_and_inside_the_reel_safe_zone(tmp, avatar):
     assert d.mean() < 0.05 and (d > 8).mean() < 0.001      # the same card, codec noise only (a zoom moves every pixel)
     img = Image.frombytes("L", (W, H), frames[0]).point(lambda v: 255 if v > 12 else 0)
     x0, y0, x1, y1 = img.getbbox()
-    assert x0 >= REEL_LEFT and x1 <= REEL_RIGHT and y0 >= REEL_TOP and y1 <= REEL_BOTTOM, (x0, y0, x1, y1)
+    assert x0 >= REEL_LEFT and x1 <= REEL_RIGHT and y0 >= REEL_TOP and REEL_BOTTOM < y1 <= REEL_PHOTO_BOTTOM, (x0, y0, x1, y1)

@@ -13,9 +13,12 @@ W, H, FPS = 1080, 1920, 30
 SAFE_TOP, SAFE_BOTTOM = 300, 1600
 # The REEL safe zone (Cyrus's News deck: "Leave the top 14%, bottom 35%, and sides 6% clear"), the strictest of all:
 # the app UI on top, the caption + buttons at the bottom. Combined with the feed crops above it is x65-1015, y300-1248.
-# X-reels keep their whole card inside it.
+# X-reels keep everything a viewer has to READ inside it (avatar, name, handle, post text). The news photo alone may
+# run below it, down to the feed-safe line (Cyrus, 2026-11-13: the photo was cropped too hard to fit): it stays inside
+# both feed crops, and only its lower edge can sit under an expanded caption in the reels viewer.
 REEL_LEFT, REEL_RIGHT = round(W * 0.06), W - round(W * 0.06)
 REEL_TOP, REEL_BOTTOM = max(SAFE_TOP, round(H * 0.14)), round(H * 0.65)
+REEL_PHOTO_BOTTOM = SAFE_BOTTOM
 
 
 class UserError(Exception):

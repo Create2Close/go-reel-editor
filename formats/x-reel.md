@@ -21,13 +21,17 @@ above the image; `"mode": "light"` gives the white version.
   the same on consecutive posts), the most dramatic verified fact, an optional stakes line, and the tease
   ending in 👇 (varied every post: "Here's who's behind it 👇"). A paragraph on screen gets swiped (the engine
   warns over 4 lines).
-- **The image sells the headline.** A real news photo of the place, the building, the person. Landscape crops
-  to the card width; a tall photo is centre-cropped.
+- **The image sells the headline.** A real news photo of the place, the building, the person. It is shown at the
+  card's width and as tall as it is, down to the feed-safe line (y1600): a landscape photo is shown whole, a tall
+  one keeps most of its height and loses a little off the bottom (`"crop_y"` moves the crop). If a face or the
+  point of the photo is still cut, say so and offer a different crop.
 - **The caption** (from the Writer: sectioned, ending "What this means for [market] Realtors" and "Bottom
   line", under 1,800 characters) is the post caption: shown in the chat to copy (SKILL.md § Handing over), never on screen.
 - **Static, 6-7 s, silent.** No slow zoom, ever (Cyrus, 2026-10-21).
-- **The whole card (avatar, name, text, image) sits inside the reel safe zone**: the top 14 %, bottom 35 % and
-  sides 6 % stay clear (x65-1015, y300-1248 on 1080x1920), which also clears the Facebook 4:5 and Instagram 3:4
-  feed crops. The engine centres the card there, crops a tall photo to fit, and refuses anything outside it.
+- **Everything a viewer reads (avatar, name, handle, post text) sits inside the reel safe zone**: the top 14 %,
+  bottom 35 % and sides 6 % stay clear (x65-1015, y300-1248 on 1080x1920). **The photo alone may run below it**, to
+  y1600: that is still inside the Facebook 4:5 and Instagram 3:4 feed crops, and only its lower edge can sit under
+  the caption in the reels viewer (Cyrus, 2026-11-13: fitting the photo above y1248 cropped it too hard). The engine
+  places the card, and refuses text outside the zone or a photo below the line.
 - **Organic only: never use X-post styling inside a paid ad.**
 - Only facts from the article. If the member's text states something the article doesn't, flag it.

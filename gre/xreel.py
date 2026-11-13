@@ -1,6 +1,7 @@
 """X-reel: a news story as a styled X post (avatar, name, badge, handle, 2-3 lines, one image). STATIC: no zoom, no
-motion, one card held 6-7 s (Cyrus, 2026-10-21). The whole card sits inside the reel safe zone (x65-1015, y300-1248:
-the top 14 %, bottom 35 % and sides 6 % stay clear, and the Facebook/Instagram feed crops with them), centred in it.
+motion, one card held 6-7 s (Cyrus, 2026-10-21). Everything a viewer reads (avatar, name, handle, post text) sits
+inside the reel safe zone (x65-1015, y300-1248: the top 14 %, bottom 35 % and sides 6 % stay clear). The photo may run
+below it, down to the feed-safe line (y1600), so it is not cropped to a thin strip (Cyrus, 2026-11-13).
 The story lives in the caption.
 
   spec = {"text": "BREAKING: ...\n\nHere's what it means 👇", "image": "news.jpg",
@@ -11,8 +12,8 @@ Organic posts only: never put X-post chrome inside a paid ad."""
 import math, sys, tempfile
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-from .common import (W, H, REEL_LEFT, REEL_RIGHT, REEL_TOP, REEL_BOTTOM, X264, FONTS, HOME, die, run, need,
-                     font_file, profile)
+from .common import (W, H, REEL_LEFT, REEL_RIGHT, REEL_TOP, REEL_BOTTOM, REEL_PHOTO_BOTTOM, X264, FONTS, HOME, die,
+                     run, need, font_file, profile)
 
 APPLE_EMOJI = Path("/System/Library/Fonts/Apple Color Emoji.ttc")
 
@@ -164,13 +165,14 @@ def card(spec, lk):
     pic = pic.resize((iw, round(pic.height * iw / pic.width)), Image.LANCZOS)
     hdr_h = round(X["header_size"] * 2.0) if spec.get("image_header") else 0
     text_h = X["body_dy"] + (len(lines) - 1) * lh + X["image_gap"] + hdr_h
-    room = REEL_BOTTOM - REEL_TOP - text_h
-    if room < 240:
+    if REEL_BOTTOM - REEL_TOP - text_h < 240:
         die(f"the post text is too long for the reel safe zone (y{REEL_TOP}-{REEL_BOTTOM}): keep it to 2-3 short lines")
+    room = REEL_PHOTO_BOTTOM - REEL_TOP - text_h   # the text stays in the safe zone; the photo may run below it
     if pic.height > room:                          # a tall photo is cropped, biased up: faces sit in the top third
         c = int((pic.height - room) * spec.get("crop_y", 0.2))
         pic = pic.crop((0, c, pic.width, c + int(room)))
-    top = int(REEL_TOP + (REEL_BOTTOM - REEL_TOP - text_h - pic.height) // 2)   # the card, centred in the safe zone
+    # a short card is centred in the safe zone; a taller one starts at its top and the photo runs down from there
+    top = int(REEL_TOP + max(0, (REEL_BOTTOM - REEL_TOP - text_h - pic.height) // 2))
     while _tlen(d, name, bold, 0) + X["name_left"] + X.get("badge_gap", 10) + X["badge_size"] > REEL_RIGHT \
             and bold.size > 30:                    # a long name shrinks rather than run under the buttons
         bold = ImageFont.truetype(str(font_file(X["font_bold"])), bold.size - 2)
@@ -211,17 +213,24 @@ def card(spec, lk):
         ImageDraw.Draw(mk).rounded_rectangle([0, 0, pic.width - 1, pic.height - 1], radius=rad, fill=255)
         pic.putalpha(mk)
     img.alpha_composite(pic, (ix, y))
+    img.info["photo_top"] = y                      # check_safe: everything above this line is text
     return img
 
 
 def check_safe(img, bg):
-    """Every drawn pixel inside the reel safe zone (x65-1015, y300-1248), or a clear error."""
+    """The text (everything above the photo) inside the reel safe zone (x65-1015, y300-1248) and the photo no lower
+    than the feed-safe line (y1600), or a clear error. Returns the box of the whole card."""
     from PIL import ImageChops
     diff = ImageChops.difference(img.convert("RGB"), Image.new("RGB", img.size, bg[:3])).convert("L").point(lambda v: 255 if v > 12 else 0)
     bb = diff.getbbox()
-    if bb and (bb[0] < REEL_LEFT or bb[1] < REEL_TOP or bb[2] > REEL_RIGHT or bb[3] > REEL_BOTTOM):
-        die(f"the X-reel card spans x{bb[0]}-{bb[2]}, y{bb[1]}-{bb[3]}: outside the reel safe zone "
+    cut = img.info.get("photo_top", H)
+    tb = diff.crop((0, 0, W, cut)).getbbox()
+    if tb and (tb[0] < REEL_LEFT or tb[1] < REEL_TOP or tb[2] > REEL_RIGHT or tb[3] > REEL_BOTTOM):
+        die(f"the X-reel's text spans x{tb[0]}-{tb[2]}, y{tb[1]}-{tb[3]}: outside the reel safe zone "
             f"(x{REEL_LEFT}-{REEL_RIGHT}, y{REEL_TOP}-{REEL_BOTTOM}). Shorten the text or the name.")
+    if bb and (bb[0] < REEL_LEFT or bb[2] > REEL_RIGHT or bb[3] > REEL_PHOTO_BOTTOM):
+        die(f"the X-reel's photo spans x{bb[0]}-{bb[2]} down to y{bb[3]}: outside x{REEL_LEFT}-{REEL_RIGHT} or below "
+            f"y{REEL_PHOTO_BOTTOM}. Shorten the text.")
     return bb
 
 
@@ -243,5 +252,6 @@ def render(spec, lk, out, log=print):
     run(["ffmpeg", "-loglevel", "error", "-y", "-loop", "1", "-framerate", "30", "-i", png, "-vf",
          "format=yuv420p,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv",
          "-frames:v", str(n), "-tune", "stillimage", *X264, out])
-    log(f"rendered {out} ({dur:.1f} s, static, card at x{bb[0]}-{bb[2]} y{bb[1]}-{bb[3]} inside the reel safe zone, silent)")
+    log(f"rendered {out} ({dur:.1f} s, static, card at x{bb[0]}-{bb[2]} y{bb[1]}-{bb[3]}: text inside the reel safe "
+        f"zone, photo above y{REEL_PHOTO_BOTTOM}, silent)")
     return out
