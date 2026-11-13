@@ -362,9 +362,21 @@ def test_clean_test_file_hides_homebrew_from_the_launcher_and_the_tools(tmp_path
     assert tools._resolve()["source"] == "bundled"
 
 
-@pytest.mark.skipif(not shutil.which("bash") or not shutil.which("uv"), reason="needs bash and uv")
+def git_bash():
+    """The bash Claude Code runs. On Windows a bare `bash` started from Python is the WSL launcher in System32,
+    not Git Bash, so look for Git's own."""
+    if os.name != "nt":
+        return shutil.which("bash")
+    git = shutil.which("git")
+    spots = [Path(os.environ.get(v, "")) / "Git" / "bin" / "bash.exe" for v in ("ProgramFiles", "ProgramW6432")]
+    if git:
+        spots.insert(0, Path(git).resolve().parent.parent / "bin" / "bash.exe")
+    return next((str(p) for p in spots if p.is_file()), None)
+
+
+@pytest.mark.skipif(not git_bash() or not shutil.which("uv"), reason="needs bash and uv")
 def test_launcher_runs_gre_from_a_folder_with_spaces(tmp_path):
     work = tmp_path / "My Reels"
     work.mkdir()
-    r = subprocess.run(["bash", str(ROOT / "gre.sh"), "looks"], cwd=work, capture_output=True, text=True)
-    assert r.returncode == 0 and "clean" in r.stdout
+    r = subprocess.run([git_bash(), str(ROOT / "gre.sh"), "looks"], cwd=work, capture_output=True, text=True)
+    assert r.returncode == 0 and "clean" in r.stdout, r.stdout + r.stderr

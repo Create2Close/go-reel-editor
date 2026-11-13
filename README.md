@@ -35,8 +35,8 @@ videos are often bigger than the chat's upload limit, and the editor reads them 
 - "Make this a b-roll reel" + the Writer's on-screen text + a clip in the folder.
 - "Make this an X-reel" + the Writer's post + the news image in the folder.
 - "Edit my yap" + your raw takes in a folder (+ your script as `script.txt` for exact captions).
-  You'll get a draft to watch ("put back the part about…", "cut 0:12 to 0:14"), then captions to approve,
-  then a title to pick.
+  You'll get one finished first version to watch: cut, captioned and titled. Say what to change ("put back the
+  part about…", "cut 0:12 to 0:14", "other titles") or "looks good".
 
 ---
 
