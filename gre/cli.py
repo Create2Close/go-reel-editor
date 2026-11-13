@@ -1,6 +1,9 @@
 """gre: the GO! Reel Editor command. Claude runs it; members never have to.
 
   gre doctor                         check the tools, fonts and looks (what 'set me up' verifies)
+  gre find [--kind video|image|any] [--days 30] [--limit 8] [folders...]
+                                     the newest videos and photos on this computer, to offer the member
+  gre update --check [--force]       is there a newer version? (the update itself: bash setup.sh --update)
   gre profile [--name N] [--handle @h] [--avatar file] [--look L] [--role "..."] [--market "..."]
                                      save who the member is (once; `gre profile` alone prints it)
   gre looks                          list the looks
@@ -80,14 +83,22 @@ def cmd_doctor(a):
         ok &= bool(good)
         print(("  ok   " if good else "  MISSING  ") + what + ("" if good or not fix else f"  -> {fix}"))
     print(f"GO! Reel Editor {__version__} at {SKILL}")
-    for tool in ("ffmpeg", "ffprobe"):
-        line(shutil.which(tool), tool, "say 'set me up'")
-    if shutil.which("ffmpeg"):
+    from . import tools
+    st = tools.activate(log=print)
+    if tools.clean_test():
+        print("  note install test mode: Homebrew's tools are ignored (delete ~/.go-reel-editor/clean-test to end it)")
+    if st["ffmpeg"]:                         # system: the computer's own; bundled: the one that ships with the editor
+        line(True, f"ffmpeg ({st['source']})")
+        if st["ffprobe"]:
+            line(True, f"ffprobe ({st['source']})")
+    else:
+        line(False, "ffmpeg" + (f" ({st['why']})" if st["why"] else ""), "say 'set me up'")
+    if st["ffmpeg"]:
         r = subprocess.run(["ffmpeg", "-hide_banner", "-filters"], capture_output=True, text=True, errors="replace").stdout
         e = subprocess.run(["ffmpeg", "-hide_banner", "-encoders"], capture_output=True, text=True, errors="replace").stdout
         line("libx264" in e, "ffmpeg can write H.264 (libx264)", "reinstall ffmpeg with setup.sh")
         print(("  ok   " if " zscale " in r else "  note ") + "HDR tone-mapping (zscale)"
-              + ("" if " zscale " in r else ": iPhone HDR clips may look washed out; setup.sh installs a full ffmpeg"))
+              + ("" if " zscale " in r else ": iPhone HDR clips may look washed out with this ffmpeg"))
     for f in ("DMSans-VF.ttf", "Gelasio-VF.ttf", "InstrumentSerif-Regular.ttf", "Inter-Regular.otf", "Inter-Bold.otf",
               "NotoColorEmoji.ttf"):
         line((FONTS / f).exists(), f"font {f}")
@@ -158,6 +169,14 @@ def cmd_qa(a):
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
+    for stream in (sys.stdout, sys.stderr):      # Windows pipes default to cp1252: file names and "·" need UTF-8
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
+    if argv[:1] not in (["doctor"], ["update"]):   # doctor reports on it itself; the update check never needs it
+        from . import tools
+        tools.activate()
     if argv[:1] == ["yap"]:
         from .yap import main as yap_main
         return _guard(lambda: yap_main(argv[1:]))
@@ -165,6 +184,11 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor")
     sub.add_parser("looks")
+    p = sub.add_parser("find")
+    p.add_argument("folders", nargs="*"); p.add_argument("--kind", choices=["video", "image", "any"], default="any")
+    p.add_argument("--days", type=float, default=30); p.add_argument("--limit", type=int, default=8)
+    p = sub.add_parser("update")
+    p.add_argument("--check", action="store_true"); p.add_argument("--force", action="store_true")
     p = sub.add_parser("profile")
     p.add_argument("--name"); p.add_argument("--handle"); p.add_argument("--avatar"); p.add_argument("--look")
     p.add_argument("--role"); p.add_argument("--market"); p.add_argument("--audience"); p.add_argument("--colors")
@@ -186,6 +210,12 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.cmd == "doctor":
         return _guard(lambda: cmd_doctor(a))
+    if a.cmd == "find":
+        from . import find
+        return _guard(lambda: find.main(a))
+    if a.cmd == "update":
+        from . import update
+        return update.main(a)
     if a.cmd == "looks":
         for n in look_names():
             print(f"{n:10s} {load_look(n).get('_about', '')}")

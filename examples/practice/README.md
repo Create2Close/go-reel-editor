@@ -6,5 +6,5 @@ stock-style photos made for this pack, and the b-roll photo is NASA's public-dom
 International Space Station (iss061e003881, images.nasa.gov).
 
 When a member says "make the practice listicle" (or b-roll, or x-reel): copy that folder into their Reels folder as
-`practice-<format>/`, read `writer-output.txt`, write `spec.json` from it exactly as for a real reel (SKILL.md § 3),
+`practice-<format>/`, read `writer-output.txt`, write `spec.json` from it exactly as for a real reel (`guide/ez-reels.md`),
 render, and show it. Then invite them to make one with their own Writer output and their own clip.

@@ -1,6 +1,6 @@
 """The engine's tests. Footage is synthetic (made by ffmpeg at test time), so no member's video is ever in the repo.
 Run: uv run --group dev pytest -q"""
-import json, os, subprocess
+import os, subprocess
 from pathlib import Path
 import pytest
 from PIL import Image
@@ -205,9 +205,9 @@ def test_yap_cut_and_render_keep_sound_on_picture(tmp, talk, preview):
     assert (v["w"], v["h"]) == ((540, 960) if preview else (1080, 1920))   # drafts are light previews
     n = sum(render.frame_plan(segs))
     assert abs(v["duration"] - n / FPS) < 0.05
-    a = json.loads(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
-                                   "stream=duration", "-of", "json", str(out)], capture_output=True, text=True).stdout)
-    assert abs(float(a["streams"][0]["duration"]) - n / FPS) < 0.06
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", str(out), "-map", "0:a:0", "-f", "s16le", "-ac", "1", "-ar",
+                          "48000", "-"], capture_output=True).stdout      # the sound's real length (no ffprobe needed)
+    assert abs(len(pcm) / 2 / 48000 - n / FPS) < 0.06
 
 
 def test_a_photo_can_be_the_background(tmp):

@@ -1,5 +1,5 @@
 """Shared pieces: the frame, the feed-safe band, looks, fonts, the member profile, ffmpeg helpers."""
-import json, os, shutil, subprocess, sys
+import json, os, re, shutil, subprocess, sys
 from pathlib import Path
 from PIL import ImageFont
 
@@ -95,8 +95,14 @@ def font(fname, size, weight=None, opsz=None):
 # ---------- ffmpeg ----------
 
 def need(tool):
+    """Make sure the video tool is there (see tools.py: the computer's own ffmpeg, or the one that ships with the
+    editor). ffprobe is optional: without it `probe` reads the same facts with ffmpeg."""
+    from . import tools
+    st = tools.activate()
+    if tool == "ffprobe" and st["ffmpeg"]:
+        return tool
     if not shutil.which(tool):
-        die(f"{tool} is not installed. Say 'set me up' and Claude will install it.")
+        die("the video tool (ffmpeg) is not set up on this computer. Say 'set me up' and Claude will set it up.")
     return tool
 
 
@@ -108,11 +114,24 @@ def run(cmd, **kw):
 
 
 def probe(path):
-    need("ffprobe")
+    """A file's streams and length, in ffprobe's JSON shape."""
+    from . import tools
+    need("ffmpeg")
     if not Path(path).exists():
         die(f"file not found: {path}")
+    if not tools.have_ffprobe():
+        return tools.probe_with_ffmpeg(path)
     r = run(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", path])
     return json.loads(r.stdout)
+
+
+def filter_script(path):
+    """ffmpeg args that load a filter graph from a file. ffmpeg 7+ spells it `-/filter_complex file`; older ones
+    `-filter_complex_script file`, which ffmpeg 9 no longer accepts."""
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-version"], capture_output=True, text=True, errors="replace")
+    m = re.match(r"ffmpeg version n?(\d+)\.", r.stdout)
+    old = bool(m) and int(m.group(1)) < 7           # git and dated builds have no leading number: they are new
+    return ["-filter_complex_script", str(path)] if old else ["-/filter_complex", str(path)]
 
 
 def video_info(path):

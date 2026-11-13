@@ -11,7 +11,8 @@ and b-rolls) and the **yap** skill (writes yaps): the writers write, the editor 
 
 - A Claude **Pro, Max, Team or Enterprise** plan (on Team or Enterprise, your admin must have Claude Code turned on) and the **Claude desktop app** (its **Code** tab, set to **Local**).
 - A Mac or a Windows PC. About 1 GB free for the editor; about 4 GB more the first time you edit a yap.
-- Mac only: Homebrew (the setup tells you the one line to paste if you don't have it).
+
+Nothing else to install: no Terminal, no Homebrew, no password. Setup fetches the open-source tools it needs by itself.
 
 ## Install (one sentence)
 
@@ -20,14 +21,19 @@ Desktop or OneDrive; `C:\Users\<you>\Reels` is perfect) → paste:
 
 > Install the GO! Reel Editor from https://github.com/Create2Close/go-reel-editor and set me up.
 
-Claude installs it, then sets up the open-source tools it needs (10-15 minutes the first time). Update later with
-"update the reel editor".
+Claude installs it and sets everything up (about 10 minutes the first time). Then start a new session and say
+**Get me started with the GO! Reel Editor.** Two quick questions, and your first reel is on screen.
+
+Claude tells you when there is a new version. You can also say "update the reel editor" any time.
 
 ## Use it
 
-- "Make this a listicle" + paste the EZ Reel Writer output + drop a clip in the folder.
-- "Make this a b-roll reel" + the Writer's on-screen text + a clip.
-- "Make this an X-reel" + the Writer's post + the news image.
+Put your clips, photos and takes in your reels folder (in Finder or File Explorer), not in the chat box: phone
+videos are often bigger than the chat's upload limit, and the editor reads them straight from the folder at any size.
+
+- "Make this a listicle" + paste the EZ Reel Writer output + a clip in the folder.
+- "Make this a b-roll reel" + the Writer's on-screen text + a clip in the folder.
+- "Make this an X-reel" + the Writer's post + the news image in the folder.
 - "Edit my yap" + your raw takes in a folder (+ your script as `script.txt` for exact captions).
   You'll get a draft to watch ("put back the part about…", "cut 0:12 to 0:14"), then captions to approve,
   then a title to pick.
@@ -46,16 +52,28 @@ git clone https://github.com/Create2Close/go-reel-editor ~/.claude/skills/go-ree
 bash ~/.claude/skills/go-reel-editor/setup.sh
 ```
 
-Follow `setup.sh`'s exit code as `SKILL.md` § 0 describes (1 = the user does one step, 2 = restart Claude).
-When it prints SETUP DONE, tell the user to start a **new** session in their reels folder (the skills load in new
-sessions) and paste: **Get me started with the GO! Reel Editor.** Setup also installs the two companion writer
-skills, `ez-reel-writer` and `yap`, unless the user already has their own copies.
+Before you start, tell the user in one line that it takes about 10 minutes and they don't need to do anything.
+Setup installs `uv` with its own installer and fetches ffmpeg by itself: no Homebrew, no winget, no password. Only if
+that fails does it fall back to the manual route and exit 1 (the user does one step) or 2 (restart Claude on
+Windows); `guide/setup.md` explains both. When it prints SETUP DONE, tell the user, in two short lines, to start a
+**new** session in their reels folder (the skills load in new sessions) and say: **Get me started with the GO! Reel
+Editor.** Setup also installs the two companion writer skills, `ez-reel-writer` and `yap`, unless the user already
+has their own copies.
 
-**Updating:** `git -C ~/.claude/skills/go-reel-editor pull && bash ~/.claude/skills/go-reel-editor/setup.sh`
-(a tarball install: download it again over the old folder).
+**Updating:** `bash ~/.claude/skills/go-reel-editor/setup.sh --update` (pulls the new version, then checks
+everything). `gre update --check` says whether there is one.
 
 ## For developers
 
-`gre/` is the engine (Python: Pillow, NumPy, OpenCV; ffmpeg does the video). `uv run --group dev pytest -q`
-runs the tests on synthetic footage. Yap transcription is WhisperX (Whisper large-v3 + wav2vec2 alignment) in
-its own environment under `~/.go-reel-editor/`, installed on first use. Fonts are SIL OFL (see `looks/fonts/`).
+- `SKILL.md` is a short router: how Claude runs the editor, how it talks to members, and which guide to read.
+- `guide/` holds the steps (setup, the welcome and looks, EZ reels, yaps); `formats/` holds each format's rules.
+- `gre/` is the engine (Python: Pillow, NumPy, OpenCV; ffmpeg does the video). `gre.sh` is the launcher Claude
+  calls: it finds `uv` and runs the engine, whatever the session's PATH looks like.
+- `uv run --group dev pytest -q` runs the tests on synthetic footage.
+- Yap transcription is WhisperX (Whisper large-v3 + wav2vec2 alignment) in its own environment under
+  `~/.go-reel-editor/`, installed on first use.
+
+## Licence
+
+MIT (see `LICENSE`): use it, change it, build on it. The bundled fonts are under the SIL Open Font License (see
+`looks/fonts/`). The tools setup downloads (uv, ffmpeg, WhisperX and its models) keep their own licences.

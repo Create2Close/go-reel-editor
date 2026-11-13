@@ -9,7 +9,7 @@ import json, re, subprocess, sys, tempfile
 from pathlib import Path
 import numpy as np
 import cv2
-from .common import W, H, FPS, FILL, UserError, need, run, source_filter, video_info
+from .common import W, H, FPS, FILL, UserError, need, run, source_filter, video_info, filter_script
 
 LIMITER = "alimiter=level_in=1:level_out=1:limit=0.501:attack=5:release=50:level=disabled:latency=1"
 XF = 0.015
@@ -90,7 +90,7 @@ def build_audio(segs, clips, nframes, tmp, highpass=80):
     wav = Path(tmp) / "cut.wav"
     script = Path(tmp) / "audio.filter"
     script.write_text(";".join(fc))
-    run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex_script", script, "-map", "[aout]",
+    run(["ffmpeg", "-v", "error", "-y", *ins, *filter_script(script), "-map", "[aout]",
          "-c:a", "pcm_f32le", wav])
     return wav
 

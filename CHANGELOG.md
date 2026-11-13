@@ -2,6 +2,39 @@
 
 Newest first. Date · area · what · why.
 
+## 0.2.0 · 2026-11-12 · easier: install, first reel, replies, yaps
+
+Members said the editor felt complicated. This release is about that. (The first three bullets are what Claude
+shows a member as "what's new".)
+
+- **Easier install: no Terminal, no password, no restart**: setup installs `uv` with its own installer and fetches
+  ffmpeg by itself, so a Mac no longer needs Homebrew and Windows no longer needs winget or a restart. The old route
+  stays as an automatic fallback. A new launcher, `gre.sh`, finds the tools whatever the session's PATH is.
+- **Shorter replies, one next step, buttons to click**: SKILL.md now opens with nine reply rules (five short lines,
+  one question at a time, one `Next:` line, choices as buttons, plain words, no narration).
+- **Talking videos in one stop**: Claude does the cut, the captions and the title and shows one finished first
+  version; the member says what to change or "looks good". "Step by step" is still there on request, and the
+  numbered transcript only appears when they ask what was cut.
+- **Two questions before the first reel, not seven**: name and @handle, and a profile photo; then the practice
+  X-reel with their own name on it. Colours, fonts and the look come after the first reel; role and market are asked
+  the first time they want something written.
+- **Claude finds the footage**: `gre find` lists the newest videos and photos in Reels, Downloads, Desktop and
+  Movies, so members pick from buttons and never move files or upload anything.
+- **Update offers**: `gre update --check` (at most once a day) tells Claude when a new version is out; it offers it
+  with one line on what is new. `setup.sh --update` does the update.
+- **A short SKILL.md**: 3,300 words became a 1,400-word router plus four guides in `guide/` (setup, the welcome and
+  looks, EZ reels, yaps), read only when needed.
+- **MIT licence** (Create2Close).
+
+## 0.1.7 · 2026-11-10 · footage goes in the folder, not the chat box
+
+- **No uploads, any size** (SKILL.md § 2, § 7): a member hit an upload limit (about 400 MB) dragging a phone video
+  into the chat box. The editor never needs that upload: it reads files straight from the folder. Claude now says
+  where to put footage every time it asks for some ("your Reels folder in Finder / File Explorer, not this chat
+  box"), and when a member attaches a video anyway or hits "file too large", it finds the file on disk (Reels,
+  Downloads, Desktop, Movies), confirms it, and copies it into the reel's folder.
+- README, the welcome's yap line and the session kit say the same.
+
 ## 0.1.6 · 2026-10-22 · house photos for the practice pack
 
 - **Practice images are real-estate scenes, not Zoom backgrounds**: the listicle now builds over a neighbourhood

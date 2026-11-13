@@ -34,7 +34,7 @@ black box), `outline` (no box, white with a dark edge).
 
 - The on-screen words are exactly the member's (or the Writer's) ON-SCREEN TEXT block.
 - The last line is readable for at least 1.5 s before the end (the engine warns).
-- The caption is shown in the chat to copy (SKILL.md § 5c) exactly as written. It opens with NEW information: if it repeats
+- The caption is shown in the chat to copy (SKILL.md § Handing over) exactly as written. It opens with NEW information: if it repeats
   the tease, say so.
 
 Examples (GO coaches): "21 habits to be incredible at sales:" over the coach reading (all 21 in the caption);

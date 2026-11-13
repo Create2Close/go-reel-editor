@@ -1,12 +1,13 @@
 [project]
 name = "go-reel-editor"
-version = "0.1.6"
+version = "0.2.0"
 description = "GO! Reel Editor: X-reels, listicles, b-roll reels and yaps, edited by Claude on your own computer."
 requires-python = ">=3.11,<3.13"
 dependencies = [
   "pillow>=10.4",
   "numpy>=1.26",
   "opencv-python-headless>=4.9,<5",
+  "imageio-ffmpeg>=0.6,<1",   # ships ffmpeg inside the package: no Homebrew, no winget (gre/tools.py)
 ]
 
 [project.scripts]

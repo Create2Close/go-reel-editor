@@ -28,9 +28,9 @@ def status():
 def ensure(log=print):
     if ready():
         return
-    uv = shutil.which("uv")
-    if not uv:
-        raise UserError("uv is not installed. Say 'set me up'.")
+    uv = shutil.which("uv") or os.environ.get("UV")     # gre.sh puts uv on PATH; `uv run` also names itself in $UV
+    if not uv or not (shutil.which(uv) or Path(uv).exists()):
+        raise UserError("the editor is not set up yet (uv is missing). Say 'set me up'.")
     log("first yap on this computer: installing the transcriber (WhisperX). About 1 GB now, ~3 GB of models on the "
         "first run. This happens once.")
     if not venv_python().exists():

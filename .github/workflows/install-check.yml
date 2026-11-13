@@ -1,0 +1,56 @@
+# Runs a clean install and the tests on GitHub's own Windows and Mac computers, every time main or a test branch
+# is pushed. It covers what a member's computer does (setup.sh, gre.sh, the engine) in Git Bash, the same shell
+# Claude uses on Windows. It does not cover the Claude desktop app itself (buttons, replies, permission pop-ups).
+name: install check
+
+on:
+  push:
+    branches: [main, "v*-test"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-install:
+    name: clean install (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What this computer has before setup
+        run: |
+          command -v uv || echo "no uv"
+          command -v ffmpeg || echo "no ffmpeg"
+          echo "autocrlf: $(git config core.autocrlf || echo unset)"
+          if grep -q $'\r' setup.sh gre.sh; then echo "PROBLEM: Windows line endings in the scripts"; exit 1; fi
+
+      - name: Ignore tools this computer already has (Homebrew, winget)
+        run: |
+          mkdir -p "$HOME/.go-reel-editor"
+          touch "$HOME/.go-reel-editor/clean-test"
+
+      - name: Setup, the way a new member's Claude runs it
+        run: bash setup.sh
+
+      - name: The editor answers through its launcher
+        run: |
+          bash gre.sh doctor
+          bash gre.sh looks
+          bash gre.sh find --limit 3 || true
+          bash gre.sh update --check --force
+
+      - name: Tests, with the built-in video tool only
+        env:
+          GRE_FFMPEG_SOURCE: bundled
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv run --group dev pytest -q
