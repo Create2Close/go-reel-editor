@@ -15,6 +15,21 @@ shows a member as "what's new".)
 - **Talking videos in one stop**: Claude does the cut, the captions and the title and shows one finished first
   version; the member says what to change or "looks good". "Step by step" is still there on request, and the
   numbered transcript only appears when they ask what was cut.
+- **Graphics on talking videos**: a headline card (the article's headline, outlet and date, with a highlighter
+  swipe across the key phrase), the rate chart (Freddie Mac's weekly 30-year average, last 52 weeks, the line draws
+  itself and the number counts up, with its source and date), a stat card (one number, or from → to) and a lower
+  third (name, title, one line: never a default, only for a member who says yes, and never a reason to hold a reel).
+  Each lands on the words the member says and is drawn in
+  their own look: their font, their card, their colours. One file per yap, `edit/graphics.json`; `gre yap graphics`
+  checks it (timing, room above the head, nothing on the face, the title or the captions) and draws a preview sheet;
+  `gre yap draft` and `gre yap final` put the graphics in, and the final check fails while one covers the face.
+  `guide/graphics.md` has the steps and the rule that matters: never invent a headline, a date or a number.
+- **`gre headline <link>`** reads an article's headline, outlet and date from the page itself (or says it could
+  not); **`gre rates`** fetches the weekly 30-year fixed average (FRED, then Freddie Mac's own file), saves it for
+  offline use, and prints the latest, a week, four weeks and a year ago, the 52-week high and low, and with
+  `--payment 400000` the monthly payment at each.
+- **Looks draw graphics too**: an optional `graphics` block in a look (`looks/README.md`); without it the card
+  comes from the rest of the look, so every existing look works unchanged. The sample sheet shows them.
 - **Two questions before the first reel, not seven**: name and @handle, and a profile photo; then the practice
   X-reel with their own name on it. Colours, fonts and the look come after the first reel; role and market are asked
   the first time they want something written.

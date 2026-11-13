@@ -7,6 +7,8 @@
                                           transcript (L#/R#), printed for the chat
   gre yap captions <folder> [--redo]      write/check captions.txt -> captions.json + a preview sheet
   gre yap title <folder> "line" ["line"]  fit the title above the head -> title.json + a frame-1 preview
+  gre yap graphics <folder>               check edit/graphics.json (headline card, rate chart, stat card, lower third):
+                                          time every graphic to its words, place it, draw a preview sheet
   gre yap final <folder>                  the finished reel + QA
   gre yap status <folder>                 what exists so far
   gre yap plan <folder> --force           propose the cut again (overwrites keep.json)
@@ -153,6 +155,65 @@ def _title(E, lk):
     return T.layer(json.loads(tj.read_text(encoding="utf-8")), lk)
 
 
+def _graphics(E, lk, cuts, moves, flat, keep, grab=None):
+    """(items, timed captions) for edit/graphics.json: every graphic timed and placed, or (None, []) when the yap
+    has no graphics file."""
+    from . import graphics as G
+    if not G.path(E).exists():
+        return None, []
+    tj, cj = E / "title.json", E / "captions.json"
+    title = json.loads(tj.read_text(encoding="utf-8")) if tj.exists() else None
+    caps = json.loads(cj.read_text(encoding="utf-8")) if cj.exists() else []
+    return G.build(E, lk, cuts, moves, flat, keep, grab=grab, title_spec=title, caps=caps), caps
+
+
+def _graphics_for_render(E, lk, cuts, moves, flat, keep, caps=()):
+    """(layers, problems) for the draft and the final. Every problem is printed: a graphic is never dropped quietly.
+    Captions that play over a full-screen card get their on-card drawing."""
+    from . import graphics as G
+    items, _ = _graphics(E, lk, cuts, moves, flat, keep)
+    if items is None:
+        return [], []
+    for it in items:
+        for ln in it.lines():
+            if ln[:8].strip() in ("FIX", "note"):
+                print(ln)
+    left = sum(1 for it in items if not it.layer)
+    print(f"graphics: {len(items) - left} on screen" + (f", {left} left out (see above)" if left else "")
+          + ("" if not G.fixes(items) else ". Run `gre yap graphics` to see them on the preview sheet."))
+    G.captions_on_cards(caps, G.layers(items), lk)
+    return G.layers(items), G.fixes(items)
+
+
+def cmd_graphics(a):
+    from . import graphics as G, title as T
+    E = edit_dir(a.folder)
+    lk = load_look(a.look)
+    if not G.path(E).exists():
+        raise UserError(f"no graphics yet: write {G.path(E)} first (guide/graphics.md has the shape)")
+    p, sm, segs, flat, keep = _cut(E, a.folder)
+    cuts = json.loads(p.read_text())
+    moves = _moves(E, cuts)
+    frames = {}
+
+    def grab(t):
+        if t not in frames:
+            frames[t] = T.grab(cuts, moves, t)
+        return frames[t]
+
+    items, caps = _graphics(E, lk, cuts, moves, flat, keep, grab)
+    print(f"graphics: {len(items)} in {G.path(E)} (look: {lk['_name']})")
+    for it in items:
+        for ln in it.lines():
+            print(ln)
+    out = G.sheet(items, E / "graphics-preview.png", grab, lk, caps, _title(E, lk))
+    if out:
+        print(f"preview: {out}")
+    bad = G.fixes(items)
+    print("all good: `gre yap draft` shows them moving" if not bad else f"{len(bad)} to fix, then run this again")
+    return 1 if bad else 0
+
+
 def transcript_sheet(flat, cuts, keep, out_md, label):
     from .captions import played_words
     played = played_words(flat, cuts, keep)
@@ -204,9 +265,10 @@ def cmd_draft(a):
     moves = _moves(E, cuts)
     caps = [] if a.no_captions else _captions(E, lk, cuts, flat, keep)
     title = None if a.no_captions else _title(E, lk)
+    gfx = [] if a.no_captions else _graphics_for_render(E, lk, cuts, moves, flat, keep, caps)[0]
     label = a.label or _next_label(E)
     out = E / "drafts" / f"draft-{label}.mp4"
-    render(cuts, out, moves=moves, captions=caps, title=title, label=label, preview=True)
+    render(cuts, out, moves=moves, captions=caps, title=title, label=label, preview=True, graphics=gfx)
     sheet = transcript_sheet(flat, cuts, keep, out.with_suffix(".md"), label)
     print(f"draft: {out}\n")
     print("=== PASTE INTO THE CHAT (the member reviews this, not a file) ===")
@@ -319,18 +381,19 @@ def cmd_final(a):
     title = _title(E, lk)
     if not caps:
         print("note: no captions (run `gre yap captions` first if you want them)")
+    gfx, bad = _graphics_for_render(E, lk, cuts, moves, flat, keep, caps)
     name = Path(a.folder).expanduser().resolve().name
     out = Path(a.out) if a.out else E / f"{re.sub(r'[^A-Za-z0-9_-]+', '-', name).strip('-') or 'yap'}-final.mp4"
-    render(cuts, out, moves=moves, captions=caps, title=title, label=None)
+    render(cuts, out, moves=moves, captions=caps, title=title, label=None, graphics=gfx)
     print(f"final: {out}")
-    return qa(str(out), yap=True)
+    return qa(str(out), yap=True, also=bad)
 
 
 def cmd_status(a):
     E = edit_dir(a.folder)
     for f, what in (("words.json", "transcript"), ("keep.json", "proposed/edited cut"), ("cuts.json", "cut"),
                     ("moves.json", "camera moves"), ("captions.txt", "caption text"), ("captions.json", "timed captions"),
-                    ("title.json", "title")):
+                    ("title.json", "title"), ("graphics.json", "graphics")):
         print(f"  {'yes' if (E / f).exists() else ' - '}  {what:22s} edit/{f}")
     for dft in sorted((E / "drafts").glob("*.mp4")) if (E / "drafts").exists() else []:
         print(f"  draft  {dft.name}")
@@ -348,8 +411,9 @@ def main(argv):
     p = sub.add_parser("captions"); p.add_argument("folder"); p.add_argument("--redo", action="store_true")
     p.add_argument("--look")
     p = sub.add_parser("title"); p.add_argument("folder"); p.add_argument("lines", nargs="+"); p.add_argument("--look")
+    p = sub.add_parser("graphics"); p.add_argument("folder"); p.add_argument("--look")
     p = sub.add_parser("final"); p.add_argument("folder"); p.add_argument("--look"); p.add_argument("--out")
     p = sub.add_parser("status"); p.add_argument("folder")
     a = ap.parse_args(argv)
     return {"start": cmd_start, "plan": cmd_plan, "cut": cmd_cut, "draft": cmd_draft, "captions": cmd_captions,
-            "title": cmd_title, "final": cmd_final, "status": cmd_status}[a.cmd](a)
+            "title": cmd_title, "graphics": cmd_graphics, "final": cmd_final, "status": cmd_status}[a.cmd](a)

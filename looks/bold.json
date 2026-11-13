@@ -273,5 +273,11 @@
   "hold": 3.5,
   "fade_out": 0.3,
   "max_width": 960
+ },
+ "graphics": {
+  "_about": "Yap graphics: the look's dark panel (made nearly solid, so small type stays readable over busy footage) with heavy white type and a solid strip for the highlight. Every field is optional (looks/README.md); the accent comes from styles.accent, else styles.red.",
+  "radius": 36,
+  "weight": 800,
+  "number_weight": 900
  }
 }

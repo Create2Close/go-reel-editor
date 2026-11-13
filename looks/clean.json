@@ -240,5 +240,10 @@
   "hold": 3.5,
   "fade_out": 0.3,
   "max_width": 960
+ },
+ "graphics": {
+  "_about": "Yap graphics (headline card, rate chart, stat card, lower third): a white rounded card, black type, a soft shadow, a felt-tip highlight. Every field is optional (looks/README.md); the accent comes from styles.accent, else styles.red.",
+  "radius": 18,
+  "weight": 700
  }
 }

@@ -37,6 +37,8 @@ videos are often bigger than the chat's upload limit, and the editor reads them 
 - "Edit my yap" + your raw takes in a folder (+ your script as `script.txt` for exact captions).
   You'll get one finished first version to watch: cut, captioned and titled. Say what to change ("put back the
   part about…", "cut 0:12 to 0:14", "other titles") or "looks good".
+- On a yap: "put this article on screen" + the link, "show the rate chart", "show 7.40 to 7.11". The headline,
+  the weekly 30-year fixed chart (Freddie Mac) or the number appears as you say it, in your own colours and font.
 
 ---
 

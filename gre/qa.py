@@ -13,13 +13,16 @@ def loudness(path):
     return (float(i.group(1)) if i else None), (float(p.group(1)) if p and "inf" not in p.group(1) else None)
 
 
-def qa(video, yap=False):
+def qa(video, yap=False, also=()):
+    """also: problems found while building the file (a graphic with an open FIX: it covers the face, its words are
+    not in the video, it sits on the title): each is a FAIL."""
     d = probe(video)
     v = next(s for s in d["streams"] if s["codec_type"] == "video")
     a = [s for s in d["streams"] if s["codec_type"] == "audio"]
     dur = float(d["format"]["duration"])
     rot = any("rotation" in sd and int(sd["rotation"]) for sd in v.get("side_data_list", []))
     fails, notes = [], []
+    fails += list(also)
     if (int(v["width"]), int(v["height"])) != (W, H):
         fails.append(f"size {v['width']}x{v['height']}, expected {W}x{H}")
     if rot:

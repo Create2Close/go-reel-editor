@@ -79,6 +79,13 @@ wide 100 → 103 % slow drift, tight 113 → 116 %, alternating. Pieces under 0.
 - Give 5-6 options, three flavours (contrast, curiosity, direct-to-viewer), recommend one with a reason; flag
   any option that claims more than they say.
 
+## Graphics (only when they earn it)
+
+A yap adds nothing by default. The exception: a headline card, the rate chart or a stat card, when the member asks
+for one or the video quotes a news story or a number (and a name card, only for a member who has said yes to one). Each lands on the words it belongs to, stays clear
+of the face, the title and the captions, and shows only what the page, the rate data or the member said. Steps and
+rules: `guide/graphics.md`.
+
 ## Sound
 
 One static chain, every yap: crossfaded joints, 80 Hz high-pass (phone rooms rumble), the kept speech raised or

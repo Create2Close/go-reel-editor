@@ -5,6 +5,7 @@
                                      the newest videos and photos on this computer, to offer the member
   gre update --check [--force]       is there a newer version? (the update itself: bash setup.sh --update)
   gre profile [--name N] [--handle @h] [--avatar file] [--look L] [--role "..."] [--market "..."]
+              [--title "Loan Officer"] [--line "NMLS #123456"] [--lower-third yes|no]
                                      save who the member is (once; `gre profile` alone prints it)
   gre looks                          list the looks
   gre font "<Google Font name>"      download a free Google Font for the member's look
@@ -14,6 +15,10 @@
   gre preview <spec.json> [--look L] [--at 6.5]   a still of the frame (fast; check before rendering)
   gre listicle|broll|xreel <spec.json> [--look L] [--out file.mp4]
   gre qa <video.mp4> [--yap]         check a finished file: size, length, sound, colour tags, rotation, loudness
+  gre headline <url>                 an article's headline, outlet and date, read from the page (for a headline card)
+  gre rates [--refresh] [--payment 400000]
+                                     the weekly 30-year fixed average (Freddie Mac PMMS): latest, a week, four weeks
+                                     and a year ago, the 52-week high and low, and the payment on a loan at each
   gre yap <step> ...                 the yap line: run `gre yap --help`
 """
 import argparse, json, shutil, subprocess, sys, tempfile
@@ -135,7 +140,8 @@ def cmd_profile(a):
     if h and not h.startswith("@"):
         h = "@" + h.strip()
     d = save_profile(name=a.name, handle=h, avatar=av, look=a.look, role=a.role, market=a.market,
-                     audience=a.audience, colors=a.colors, fonts=a.fonts, notes=a.notes)
+                     audience=a.audience, colors=a.colors, fonts=a.fonts, notes=a.notes, title=a.title, line=a.line,
+                     lower_third=None if a.lower_third is None else a.lower_third == "yes")
     print(json.dumps(d, indent=1))
     print(f"saved in {HOME / 'profile.json'}")
 
@@ -174,7 +180,7 @@ def main(argv=None):
             stream.reconfigure(encoding="utf-8", errors="replace")
         except (AttributeError, ValueError, OSError):
             pass
-    if argv[:1] not in (["doctor"], ["update"]):   # doctor reports on it itself; the update check never needs it
+    if argv[:1] not in (["doctor"], ["update"], ["headline"], ["rates"]):   # doctor reports on it itself; the rest never need it
         from . import tools
         tools.activate()
     if argv[:1] == ["yap"]:
@@ -193,6 +199,10 @@ def main(argv=None):
     p.add_argument("--name"); p.add_argument("--handle"); p.add_argument("--avatar"); p.add_argument("--look")
     p.add_argument("--role"); p.add_argument("--market"); p.add_argument("--audience"); p.add_argument("--colors")
     p.add_argument("--fonts"); p.add_argument("--notes")
+    p.add_argument("--title"); p.add_argument("--line"); p.add_argument("--lower-third", choices=["yes", "no"])
+    p = sub.add_parser("headline"); p.add_argument("url")
+    p = sub.add_parser("rates")
+    p.add_argument("--refresh", action="store_true"); p.add_argument("--payment")
     p = sub.add_parser("font"); p.add_argument("name")
     p = sub.add_parser("colors"); p.add_argument("image")
     p = sub.add_parser("look"); p.add_argument("action", choices=["new", "sheet"]); p.add_argument("name", nargs="?")
@@ -222,6 +232,9 @@ def main(argv=None):
         return 0
     if a.cmd == "profile":
         return _guard(lambda: cmd_profile(a))
+    if a.cmd in ("headline", "rates"):
+        from . import news
+        return _guard(lambda: (news.cmd_headline if a.cmd == "headline" else news.cmd_rates)(a))
     if a.cmd in FORMATS:
         return _guard(lambda: cmd_render(a.cmd, a))
     if a.cmd == "preview":

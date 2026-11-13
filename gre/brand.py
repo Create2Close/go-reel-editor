@@ -89,6 +89,7 @@ def make_look(name, base="clean", font=None, caption_font=None, accent=None, acc
     if font:
         font_file(font)
         lk["font"] = font
+        (lk.get("graphics") or {}).pop("number_font", None)          # their font draws the numbers on graphics too
         for st in lk["styles"].values():
             if st.get("font") and not st.get("outline"):
                 st["font"] = font
@@ -129,8 +130,10 @@ def _bg():
 
 
 def sample_sheet(look_name, out, clip_frame=None):
-    """One image: a listicle, a b-roll, an X-reel (if the profile has a photo) and a yap caption + title, in this look."""
-    from . import listicle, broll, xreel, captions, title as T
+    """One image: a listicle, a b-roll, an X-reel (if the profile has a photo), a yap caption + title and the yap
+    graphics (headline card, stat card, rate chart; the lower third only for a member who said yes to one), in
+    this look."""
+    from . import listicle, broll, xreel, captions, graphics, title as T
     from .text import draw_lines
     lk = load_look(look_name)
     base = Image.open(clip_frame).convert("RGBA").resize((W, H)) if clip_frame else _bg()
@@ -159,6 +162,7 @@ def sample_sheet(look_name, out, clip_frame=None):
     arr, x, y = captions.draw("how your **captions** look", lk["captions"])
     yp.alpha_composite(Image.fromarray(arr), (x, y))
     tiles.append(yp)
+    tiles += graphics.samples(lk, base)
     sheet = Image.new("RGB", (W // 3 * len(tiles), H // 3), "white")
     for i, t in enumerate(tiles):
         sheet.paste(t.convert("RGB").resize((W // 3, H // 3)), (i * W // 3, 0))

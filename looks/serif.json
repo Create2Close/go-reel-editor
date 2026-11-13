@@ -228,5 +228,28 @@
   "hold": 3.5,
   "fade_out": 0.3,
   "max_width": 960
+ },
+ "graphics": {
+  "_about": "Yap graphics: a square paper card, serif type, a hairline under the outlet, numbers in Instrument Serif. Every field is optional (looks/README.md); the accent comes from styles.accent, else styles.red.",
+  "card": [
+   250,
+   246,
+   238,
+   255
+  ],
+  "radius": 0,
+  "rule": true,
+  "weight": 600,
+  "number_font": "InstrumentSerif-Regular.ttf",
+  "shadow": {
+   "color": [
+    0,
+    0,
+    0,
+    110
+   ],
+   "dy": 6,
+   "blur": 14
+  }
  }
 }

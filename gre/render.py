@@ -1,5 +1,5 @@
-"""The yap renderer: the cut (any number of clips) + automatic camera moves + captions + title + the audio chain,
-in ONE pass, no editing app. Frame-exact: every segment is a whole number of frames at 30 fps and its sound is
+"""The yap renderer: the cut (any number of clips) + automatic camera moves + graphics + captions + title + the audio
+chain, in ONE pass, no editing app. Frame-exact: every segment is a whole number of frames at 30 fps and its sound is
 trimmed to exactly that length, so picture and sound never drift.
 
 Audio = a STATIC chain, never dynamic loudness: 15 ms equal-power crossfades at every joint (no clicks, never a fade
@@ -96,9 +96,10 @@ def build_audio(segs, clips, nframes, tmp, highpass=80):
 
 
 def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="auto", highpass=80, log=print,
-           preview=False):
+           preview=False, graphics=None):
     """preview=True: a quick, light review copy (540x960, fast encode) that plays in the chat; the final is full
-    quality."""
+    quality. graphics: layers from gre/graphics.py, laid on the picture under the captions and the title (a
+    full-screen card covers the picture; the captions keep running over it)."""
     need("ffmpeg")
     segs = cuts["segments"]
     clips = cuts["clips"]
@@ -116,6 +117,7 @@ def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="a
     else:
         g = float(gain)
     caps = captions or []
+    gfx = graphics or []
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     enc = subprocess.Popen(
@@ -150,9 +152,15 @@ def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="a
             sc = mv["from"] + (mv["to"] - mv["from"]) * (i / max(1, n - 1))
             img = scale_frame(img, sc / 100.0)
             t = seq / FPS
+            for layer in gfx:
+                layer.draw(img, seq - layer.f0)
             for c in caps:
                 if c["start"] <= t < c["end"]:
-                    blend(img, c["img"], c["x"], c["y"])
+                    if gfx and "on_card" in c:             # a caption over a full-screen card wears the card's ink
+                        from .graphics import caption_now
+                        blend(img, *caption_now(c, gfx, seq))
+                    else:
+                        blend(img, c["img"], c["x"], c["y"])
                     break
             if title:
                 al = title["alpha"](t)
@@ -177,5 +185,6 @@ def render(cuts, out, moves=None, captions=None, title=None, label=None, gain="a
     if enc.returncode:
         raise UserError("the video encoder failed")
     log(f"rendered {out}: {total / FPS:.2f} s, {len(segs)} cuts, gain {g:+.1f} dB into the -6 dBFS limiter"
-        + (f", {len(caps)} captions" if caps else "") + (", title" if title else "") + (f", DRAFT {label}" if label else ""))
+        + (f", {len(caps)} captions" if caps else "") + (", title" if title else "")
+        + (f", {len(gfx)} graphic{'s' * (len(gfx) != 1)}" if gfx else "") + (f", DRAFT {label}" if label else ""))
     return out, moves

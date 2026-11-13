@@ -38,13 +38,17 @@ runner-up titles in mind for later.
 
 ## 5. Show the first version: THE ONE STOP
 
+They asked for a graphic up front (an article on screen, the rate chart, a number, their name)? Add it now, before
+the draft: `guide/graphics.md`. It is part of the one first version.
+
 `gre yap draft <folder>` renders a quick preview with the cut, the captions and the title (a clock sits in the
 corner so notes can point at a time). In ONE reply:
 
 - the draft, playing in the chat;
 - two or three plain lines on what you did: "I took out two retakes, the aside about your dog, and the sign-off
   after your call to action. 2:18 of takes is now 1:05. Title: *The rate isn't the problem*.";
-- buttons: *Looks good, finish it* · *I have notes* · *Other titles* · *Show what you cut*.
+- buttons: *Looks good, finish it* · *I have notes* · *Other titles* · *Show what you cut*. When the video quotes
+  a number or a news story and has no graphic yet, swap *Show what you cut* for *Add a graphic*.
 
 Do NOT paste the numbered transcript unless they pick *Show what you cut* (or ask "what did you cut?"). Then paste
 the block `gre yap draft` printed between `=== PASTE INTO THE CHAT ===` and `=== END ===`, as it is.
@@ -61,6 +65,7 @@ the rest of the cut.
 | Caption words or line breaks | Edit `edit/captions.txt` → `gre yap captions` → `gre yap draft` |
 | The title | *Other titles*: offer your best three as buttons. Then `gre yap title ...` → `gre yap draft` |
 | The zoom | Edit `edit/moves.json` (`"auto": false` turns the automatic moves off) → `gre yap draft` |
+| A graphic (add one, move it, full screen, take it off) | `guide/graphics.md`: edit `edit/graphics.json` → `gre yap graphics` → `gre yap draft` |
 | The look | `--look <name>` on `captions`, `title` and `draft` |
 
 Show the new draft with one line on what changed and the same buttons. A simple video should not take more than

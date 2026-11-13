@@ -53,8 +53,9 @@ gre look new <first-name> --from <clean|bold|serif> --font <file> --accent <main
              [--caption-size 96-110 for big one-to-three-word captions]
 ```
 
-It becomes their default and writes a sample sheet (a listicle, a b-roll, an X-reel and a yap title with a caption,
-all in their look). Show it and adjust until they like it ("bigger captions", "use the darker blue").
+It becomes their default and writes a sample sheet (a listicle, a b-roll, an X-reel, a yap title with a caption, and
+the yap graphics: headline card, number card and rate chart, all in their look). Show it and adjust until
+they like it ("bigger captions", "use the darker blue").
 
 ## What the profile holds, and when to ask
 
@@ -64,6 +65,7 @@ all in their look). Show it and adjust until they like it ("bigger captions", "u
 | Colours, font, look | After the first reel, or when they ask | `gre look new ...` |
 | What they do, where, for whom | The first time they ask you to WRITE something | `gre profile --role "loan officer" --market "Tampa FL" --audience "Realtors and first-time buyers"` |
 | Caption size for talking videos | Never ask. They say "bigger captions" if they want it | `--caption-size` on their look |
+| Name card on talking videos (name, title, NMLS line): off unless they say yes | Never in the welcome. Once, after their first reel with graphics (`guide/graphics.md` § The name card); no is a complete answer | `gre profile --lower-third no`, or `--lower-third yes --title "Loan Officer" --line "NMLS #123456"` |
 
 `gre profile` alone prints what is saved. `gre looks` lists the looks; `--look <name>` on any command uses another
 look once; `gre profile --look <name>` changes the default. A look is one JSON file (`looks/README.md` explains the

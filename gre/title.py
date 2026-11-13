@@ -12,22 +12,32 @@ from .text import style_font, wrap, block_height, draw_lines
 _CASCADE = None
 
 
-def head_box(frames):
-    """(highest head point, lowest chin point) over the frames: face top minus a third of the face for hair, face
-    bottom plus a sixth for the chin. (None, None) if no face is found."""
+def face_boxes(frames):
+    """The largest face in each frame as (x, y, w, h) in frame pixels; frames with no face are skipped."""
     global _CASCADE
     _CASCADE = _CASCADE or cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    tops, faces_top, chins = [], [], []
+    out = []
     for img in frames:
         g = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         small = cv2.resize(g, (W // 2, H // 2))
         faces = _CASCADE.detectMultiScale(small, 1.1, 5, minSize=(80, 80))
         if len(faces):
-            x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
-            tops.append(int(2 * (y - 0.35 * h)))
-            faces_top.append(int(2 * (y + 0.05 * h)))     # the brow line: the face proper starts here
-            chins.append(int(2 * (y + h * 1.17)))
-    return (min(tops), min(faces_top), max(chins)) if tops else (None, None, None)
+            out.append(tuple(int(2 * v) for v in max(faces, key=lambda f: f[2] * f[3])))
+    return out
+
+
+def head_span(boxes):
+    """(highest head point, brow line, lowest chin point) over face boxes: face top minus a third of the face for
+    hair, the brow where the face proper starts, face bottom plus a sixth for the chin. Nones if there are no boxes."""
+    if not boxes:
+        return None, None, None
+    return (min(int(y - 0.35 * h) for x, y, w, h in boxes), min(int(y + 0.05 * h) for x, y, w, h in boxes),
+            max(int(y + 1.17 * h) for x, y, w, h in boxes))
+
+
+def head_box(frames):
+    """(highest head point, brow line, lowest chin point) over the frames. (None, None, None) if no face is found."""
+    return head_span(face_boxes(frames))
 
 
 def head_top(frames):

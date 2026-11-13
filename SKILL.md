@@ -48,6 +48,7 @@ Each guide is short. Read it before you act, every time: it holds the steps and 
 | "Get me started" · first time · name, @handle, photo · colours, fonts, "match my reels", looks | `guide/welcome.md` |
 | X-reel, listicle, b-roll, a practice reel | `guide/ez-reels.md`, then `formats/x-reel.md`, `formats/listicle.md` or `formats/b-roll.md` |
 | A talking video (a yap) | `guide/yap.md`, then `formats/yap.md` |
+| On a yap: "put this article on screen", "show the rate chart", "show 7.40 to 7.11", "add my NMLS number" | `guide/graphics.md` |
 
 If `~/.go-reel-editor/setup-ok` is missing, or a command says the editor is not set up: `guide/setup.md` first.
 
