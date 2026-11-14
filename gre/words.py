@@ -57,6 +57,9 @@ def sheet(d, flat, out_md):
             cur.append(f"W{w['i']}·{w['w']}{tag}")
         if cur:
             lines.append(f"- {t0:6.1f}s  " + " ".join(cur))
+        if c.get("sounds"):
+            lines.append("- sound with no words in it (a breath, a chair; never part of a cut): "
+                         + ", ".join(f"{a:.1f}-{b:.1f}s" for a, b in c["sounds"]))
         lines.append("")
     Path(out_md).write_text("\n".join(lines), encoding="utf-8")
     return out_md

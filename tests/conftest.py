@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 os.environ.setdefault("GRE_HOME", str(Path(__file__).parent / ".home"))
+os.environ.setdefault("GRE_LISTEN", "0")       # no test runs the transcriber: the listen-back is tested on word lists
 from gre import tools  # noqa: E402
 
 tools.activate()

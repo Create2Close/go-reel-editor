@@ -2,6 +2,55 @@
 
 Newest first. Date · area · what · why.
 
+## 0.2.1 · 2026-11-14 · talking videos: the editor hears the take, and listens back to its cut
+
+The first real talking-video test of 0.2.0 came back bad: a line played twice, the captions ran seconds ahead of
+the words, and three seconds of silence sat in the middle. One cause: the editor cut from a transcript it never
+checked against the sound. Whisper had folded three takes of a line into one and timed the rest against the wrong
+audio. (The first three bullets are what Claude shows a member as "what's new".)
+
+- **It hears every take**: the waveform is cut into stretches of speech and each one is transcribed on its own,
+  asked for every word as said. A second take, a wrong number or a restart can no longer vanish from the
+  transcript or be timed onto another take. A stretch with more sound than words is listened to a second way, and
+  a noise is no longer written down as "Thank you." (`gre/hear.py`, `gre/_whisperx_worker.py`).
+- **It listens back to its own cut**: `gre yap cut` plays the cut to the transcriber and compares it word for word
+  with what the cut is meant to say. A line that plays twice, words that are missing and dead air are `FIX` lines,
+  with the place in the take and what to change; a draft with one open says `NOT READY TO SHOW`, and a final fails
+  its check. A clipped word or number next to a cut is a `FIX` too; a word that was only heard another way, where
+  nothing was cut, is a note (`gre/listen.py`, `edit/heard.json`).
+- **Rates get %, money gets $, and the comment word stands out**: captions write 7.11%, $79 a month and $400,000
+  ("seven point one one", "940 dollars" and "400 thousand dollar loan" included), and the word a call to action
+  asks for is in bold capitals ("Just comment **RATES**"). The caption check enforces both; `#ok` in
+  `captions.txt` leaves a number or a word alone.
+- **No dead air**: pauses of half a second or more are closed where the WAVEFORM is silent, not where the word
+  times say, so a mistimed word cannot leave a gap. A piece of sound no kept word belongs to is left out.
+- **No stray sounds where a retake was cut**: the aligner starts a word the moment the one before it ends, so
+  after "Mortgage rates, (pause) mortgage rates just dropped" the kept "mortgage" began with the s of the cut
+  "rates,". Word boundaries now sit where the sound puts them (a gap inside a one-word span is the gap between
+  two words), a cut's start no longer reaches back into a cut word, and a short burst set apart by a gap next to a
+  cut word is a `FIX` in the listen-back, with the stretch to drop. (Cyrus, 2026-11-14: four of them in one draft,
+  all after back-to-back retakes.)
+- **A breath is a pause**: the cut tells speech from sound that is only above the room. Half a second with nothing
+  louder than a breath is tightened like silence, and a cut ends at the end of the speech (soft endings kept), not
+  at the end of the breath after it.
+- **Numbers keep their whole length**: figures are timed the way they are said ("7.4%" as "seven point four
+  percent", "$400,000" as "four hundred thousand dollars"), and every edge of a cut runs to the end of the sound the
+  word sits in. Before, a rate could lose everything after its first digit.
+- **`"drop"` in `keep.json`**: a stretch of the take, in seconds, that never plays whatever the words say: the way
+  to cut something the transcript has no words for.
+- **The first cut knows more repeats**: a restart that finishes its last word ("and that, and that's") and a short
+  line said twice ("That's October. That's October.").
+- **A script matches however its numbers are written**: "seven point one one" in `script.txt` finds the take
+  the transcript wrote as "7.11%", and the caption shows 7.11%. A second go inside a scripted line ("...walked away
+  from. Let me do that again. The number you walked away from is already gone.") keeps the second go. The last
+  word of a line heard another way is no longer dropped.
+- **Bold reads as bold**: bold caption words are drawn a touch fatter in every look (`captions.bold_fat` in a look,
+  0.02 of the size by default). One weight step was invisible at phone size, and the serif look had no bold at all.
+- Fixed: digit-by-digit numbers were added up ("eight seven five" became 20), and "400 thousand" became
+  "400 1000".
+- A transcript made before this version is reused as it is, with a note. `gre yap start <folder> --retranscribe
+  --force` hears the take again.
+
 ## 0.2.0 · 2026-11-13 · easier (install, first reel, replies, yaps) and news graphics
 
 Members said the editor felt complicated. This release is about that. (The first three bullets are what Claude

@@ -2,7 +2,8 @@
 
   gre yap start <folder>                  find the clips, transcribe (once), propose the cut (keep.json), write the
                                           numbered transcript (words.md)
-  gre yap cut <folder>                    keep.json -> cuts.json (pauses tightened, edges on the waveform)
+  gre yap cut <folder>                    keep.json -> cuts.json (pauses tightened, edges on the waveform), then the
+                                          cut is LISTENED BACK: it must play the words it is meant to, no dead air
   gre yap draft <folder> [--label v1]     a quick review copy (clock burned in, plays in the chat) + the numbered
                                           transcript (L#/R#), printed for the chat
   gre yap captions <folder> [--redo]      write/check captions.txt -> captions.json + a preview sheet
@@ -61,6 +62,9 @@ def cmd_start(a):
         if [c["clip"] for c in d["clips"]] != [c.name for c in clips]:
             raise UserError("the clips changed since the transcript was made: run with --retranscribe")
         print("transcript: reusing edit/words.json (transcribed once)")
+        if d.get("heard", 1) < 2:
+            print("  note: this transcript was made before 0.2.1, which hears every take on its own. If the cut "
+                  "repeats a line or the captions drift, run `gre yap start <folder> --retranscribe --force`.")
     else:
         transcribe.transcribe(clips, wj)
     d, flat = wordsmod.load(E)
@@ -103,7 +107,7 @@ def cmd_plan(a):
 
 
 def _cut(E, folder):
-    from . import cut
+    from . import cut, listen
     loaded = wordsmod.load(E)
     if not loaded:
         raise UserError("no transcript yet: run `gre yap start` first")
@@ -113,15 +117,21 @@ def _cut(E, folder):
     segs = cut.build(flat, keep, clips)
     p = cut.write(E, segs, clips)
     sm = cut.summary(segs, flat)
-    return p, sm, segs, flat, keep
+    heard = listen.ensure(E, p, flat, keep)       # the cut, heard back: its FIX lines, and the real word times
+    return p, sm, segs, flat, keep, heard
 
 
 def cmd_cut(a):
     E = edit_dir(a.folder)
-    p, sm, segs, flat, keep = _cut(E, a.folder)
+    from . import listen
+    p, sm, segs, flat, keep, heard = _cut(E, a.folder)
     print(f"cut: {sm['seconds']:.1f} s, {sm['segments']} pieces, {sm['words']} words -> {p}")
     if sm["seconds"] > 90:
         print("  note: over 90 s. Short yaps land at 45-60 s: look for asides, examples and post-CTA sign-offs to cut.")
+    bad = listen.report(heard)
+    if bad:
+        print(f"{len(bad)} to fix in keep.json, then run this again. Never show a draft with a FIX line open.")
+    return 1 if bad else 0
 
 
 def _moves(E, cuts):
@@ -191,7 +201,7 @@ def cmd_graphics(a):
     lk = load_look(a.look)
     if not G.path(E).exists():
         raise UserError(f"no graphics yet: write {G.path(E)} first (guide/graphics.md has the shape)")
-    p, sm, segs, flat, keep = _cut(E, a.folder)
+    p, sm, segs, flat, keep, heard = _cut(E, a.folder)
     cuts = json.loads(p.read_text())
     moves = _moves(E, cuts)
     frames = {}
@@ -260,7 +270,7 @@ def cmd_draft(a):
     from .render import render
     E = edit_dir(a.folder)
     lk = load_look(a.look)
-    p, sm, segs, flat, keep = _cut(E, a.folder)
+    p, sm, segs, flat, keep, heard = _cut(E, a.folder)
     cuts = json.loads(p.read_text())
     moves = _moves(E, cuts)
     caps = [] if a.no_captions else _captions(E, lk, cuts, flat, keep)
@@ -269,6 +279,10 @@ def cmd_draft(a):
     label = a.label or _next_label(E)
     out = E / "drafts" / f"draft-{label}.mp4"
     render(cuts, out, moves=moves, captions=caps, title=title, label=label, preview=True, graphics=gfx)
+    if heard["fix"]:
+        from . import listen
+        print("NOT READY TO SHOW. The cut does not play what it should (fix keep.json, `gre yap cut`, draft again):")
+        listen.report(heard)
     sheet = transcript_sheet(flat, cuts, keep, out.with_suffix(".md"), label)
     print(f"draft: {out}\n")
     print("=== PASTE INTO THE CHAT (the member reviews this, not a file) ===")
@@ -296,9 +310,10 @@ def cmd_captions(a):
     if not ct.exists() or a.redo:
         lines = C.draft(played, lk)
         ct.write_text("# One caption per line, in order. **word** = bold. Fix mishears in the text; never re-time.\n"
+                      "# A rate takes % and money takes $. The word a call to action asks for is **CAPITALS**.\n"
                       + "\n".join(lines) + "\n", encoding="utf-8")
         print(f"wrote a first chunking: {ct} ({len(lines)} captions). Read it, fix it, run this again.")
-    caps, problems, hard = C.build(C.parse(ct), played, lk)
+    caps, problems, hard = C.build(C.parse(ct), played, lk, C.parse_ok(ct))
     (E / "captions.json").write_text(json.dumps(caps, indent=1, ensure_ascii=False), encoding="utf-8")
     for pr in problems:
         print(("  FIX   " if pr in hard else "  note  ") + pr)
@@ -374,7 +389,7 @@ def cmd_final(a):
     from .qa import qa
     E = edit_dir(a.folder)
     lk = load_look(a.look)
-    p, sm, segs, flat, keep = _cut(E, a.folder)
+    p, sm, segs, flat, keep, heard = _cut(E, a.folder)
     cuts = json.loads(p.read_text())
     moves = _moves(E, cuts)
     caps = _captions(E, lk, cuts, flat, keep)
@@ -386,7 +401,7 @@ def cmd_final(a):
     out = Path(a.out) if a.out else E / f"{re.sub(r'[^A-Za-z0-9_-]+', '-', name).strip('-') or 'yap'}-final.mp4"
     render(cuts, out, moves=moves, captions=caps, title=title, label=None, graphics=gfx)
     print(f"final: {out}")
-    return qa(str(out), yap=True, also=bad)
+    return qa(str(out), yap=True, also=list(bad) + [f"the cut, heard back: {f}" for f in heard["fix"]])
 
 
 def cmd_status(a):

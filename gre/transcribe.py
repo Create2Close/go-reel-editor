@@ -42,14 +42,24 @@ def ensure(log=print):
     log("transcriber installed")
 
 
-def transcribe(clips, out_json, model=None, log=print):
-    """Transcribe the clips (in order) into one words.json: {"clips": [{"clip", "path", "duration", "words": [...]}]}."""
+def transcribe(clips, out_json, model=None, log=print, quiet=False, at=None):
+    """Transcribe the clips (in order) into one words.json: {"clips": [{"clip", "path", "duration", "words": [...],
+    "sounds": [[start, end]: sound with no words], "utterances": [[start, end]]}]}. The worker listens one utterance
+    at a time (see _whisperx_worker.py). quiet: no progress lines (the listen-back of a cut). at: {clip name: [[start,
+    end], ...]}, the utterances to use instead of the ones found on the waveform (a cut names its own joints)."""
     ensure(log)
     model = model or os.environ.get("GRE_WHISPER_MODEL", "large-v3")
     env = dict(os.environ, PYTHONUNBUFFERED="1", TOKENIZERS_PARALLELISM="false", PYTHONWARNINGS="ignore",
                HF_HUB_ENABLE_HF_TRANSFER="0")       # some machines set it; the package it needs is not installed
-    log(f"transcribing {len(clips)} clip(s) with Whisper {model} on this computer (first run downloads the model)")
-    r = subprocess.run([str(venv_python()), str(WORKER), str(out_json), model, *map(str, clips)], env=env)
+    if at:
+        env["GRE_HEAR_AT"] = str(Path(out_json).with_suffix(".at.json"))
+        Path(env["GRE_HEAR_AT"]).write_text(json.dumps(at), encoding="utf-8")
+    if not quiet:
+        log(f"transcribing {len(clips)} clip(s) with Whisper {model} on this computer (first run downloads the model)")
+    r = subprocess.run([str(venv_python()), str(WORKER), str(out_json), model, *map(str, clips)], env=env,
+                       **(dict(capture_output=True, text=True, errors="replace") if quiet else {}))
     if r.returncode:
+        if quiet:
+            print((r.stderr or "")[-1500:], file=sys.stderr)
         raise UserError("transcription failed (see the messages above)")
-    return json.loads(Path(out_json).read_text())
+    return json.loads(Path(out_json).read_text(encoding="utf-8"))

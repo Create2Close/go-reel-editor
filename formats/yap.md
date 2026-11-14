@@ -9,6 +9,10 @@ Default length under 60 s; a 45 s cut usually beats a 70 s one.
 
 ## Cut (the judgement layer; the engine already did fillers, restarts and repeated sentences)
 
+**The editor works from sound, not from a transcript it trusts.** Every stretch of speech is transcribed on its own,
+pauses are closed where the waveform is silent, and every cut is listened back and compared with what it is meant
+to say before anyone sees it (`guide/yap.md` § 2). A cut with a `FIX` line open is not a draft yet.
+
 **The test for every line: does the video lose impact or clarity without it?** Relevant is not necessary.
 
 Always
@@ -63,6 +67,12 @@ wide 100 → 103 % slow drift, tight 113 → 116 %, alternating. Pieces under 0.
   carry it to the next line. A particle that belongs to its verb stays ("all in", "figure it out").
 - No periods; "?" and "!" stay; no comma at a line end; commas and colons are fine for lists and lead-ins.
 - Numbers over 10 as numerals (2009, 34, 31st, $10,000); ten and under as words.
+- **A rate always takes %, money always takes $**, and neither is spelled out: 7.11%, 7.40%, $79 a month,
+  $400,000, $1.2 million. Never "7.11", "79 dollars" or "7 percent". If they quote a price, a payment, a saving or
+  a loan amount, it is money; if they quote what the loan costs a year, it is a rate.
+- **The word a call to action asks for is in bold capitals**: "Just comment **RATES**", "DM me the word **GUIDE**".
+  It is the one thing the viewer has to type, so it must read as that. (It does not count against the one bold
+  word every five seconds.)
 - "Realtor" always with a capital R. Brand names as the brand spells them.
 - Quoted or paraphrased speech in “curly quotes”.
 - **Bold** about one word every 5 seconds: the stressed word.

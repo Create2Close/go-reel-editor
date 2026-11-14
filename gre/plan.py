@@ -55,12 +55,33 @@ def _restart_of(run, after):
     return [norm(x) for x in run[-k:]] == [norm(x) for x in after[:k]] or norm(run[0]) == norm(after[0])
 
 
+def _key(t):
+    """A word as the script matcher compares it. A figure counts by its value, however it is written:
+    '7.40%' = '7.4', '$400,000' = '400000'."""
+    raw = t.strip("\"“”’'.,?!:;()$%")
+    if re.fullmatch(r"\d[\d,]*(\.\d+)?", raw):
+        return f"{float(raw.replace(',', '')):g}"
+    return norm(t).replace("$", "").replace("%", "")
+
+
+def _said_again(kept, run, T):
+    """How many words at the end of an inserted run repeat the words kept just before it ("the number you walked
+    away from. Let me do that again. The number you walked away from ..."): the run is then a second go at them."""
+    for m in range(min(len(kept), len(run)), 1, -1):
+        if [T[x] for x in kept[-m:]] == [T[x] for x in run[-m:]] and all(T[x] for x in run[-m:]):
+            return m
+    return 0
+
+
 def plan_scripted(flat, sentences):
-    T = [norm(w["w"]) for w in flat]
+    from .captions import shown
+    T = [_key(w["w"]) for w in flat]
     keep_idx, display, notes, chosen = [], {}, [], []
     for si, sent in enumerate(sentences):
-        toks = sent.split()
-        S = [norm(t) for t in toks]
+        # the script as a caption would write it ("seven point one one" -> 7.11, "79 dollars" -> $79): that is how
+        # the transcript writes what they said, so the two can be matched, and it is what the caption should show
+        toks = [t for t in shown(sent.split()) if t]
+        S = [_key(t) for t in toks]
         S_ok = [x for x in S if x]
         if not S_ok:
             continue
@@ -95,7 +116,9 @@ def plan_scripted(flat, sentences):
         pend_script = []                                  # script words with no transcript word yet
         for tag, a0, a1, b0, b1 in ops:
             if b0 >= last_b and tag in ("insert", "replace") and b1 > last_b:
-                b1 = last_b
+                # past the last matched word the window is the NEXT line: an insert there is not this line's, and a
+                # replace is this line's last words heard another way ("7.11." said, "7.1%." heard): word for word
+                b1 = last_b if tag == "insert" else min(b1, b0 + (a1 - a0))
             if tag == "equal" or (tag == "replace" and b1 > b0):
                 for k in range(b1 - b0):
                     gi = i + b0 + k
@@ -118,6 +141,12 @@ def plan_scripted(flat, sentences):
                 after = [flat[i + b]["w"] for b in range(b1, min(b1 + len(run) + 1, len(win)))]
                 if all(norm(x) in FILLERS for x in run) or _restart_of(run, after):
                     continue                               # a stumble or a filler inside the take
+                m = _said_again(kept, [i + b for b in range(b0, b1)], T)
+                if m:                                      # a second go at the last words: the second go plays
+                    first, kept[-m:] = kept[-m:], [i + b for b in range(b1 - m, b1)]
+                    for old, new in zip(first, kept[-m:]):
+                        display[new] = display.pop(old, flat[new]["w"])
+                    continue
                 for b in range(b0, b1):                    # an ad-lib: kept, said as said
                     kept.append(i + b)
                 notes.append(f"line {si + 1}: kept words not in the script: \"{' '.join(run)}\"")
@@ -158,7 +187,10 @@ def plan_unscripted(flat):
                 j = i + k + g
                 if j + k > n or not same_clip(i, j + k - 1):
                     continue
-                if T[i:i + k] == T[j:j + k] and all(T[i:i + k]) and not any(x in FILLERS for x in T[i:i + k]):
+                again = T[i:i + k] == T[j:j + k] or (            # "and that, and that's": the last word finished
+                    k >= 2 and T[i:i + k - 1] == T[j:j + k - 1] and len(T[i + k - 1]) >= 3
+                    and T[j + k - 1].startswith(T[i + k - 1]))
+                if again and all(T[i:i + k]) and not any(x in FILLERS for x in T[i:i + k]):
                     if k == 1 and T[i] in ("that", "had", "is", "very", "really", "no", "so"):
                         continue
                     if any(ends_sentence(flat[x]["w"]) for x in range(i, j)):
@@ -178,13 +210,16 @@ def plan_unscripted(flat):
                 (i + 1 < n and flat[i + 1]["start"] - flat[i]["end"] >= 1.2):
             sents.append(cur)
             cur = []
-    toks = [[T[x] for x in s if T[x] and T[x] not in FILLERS] for s in sents]
+    toks = [[T[x] for x in s if T[x] and T[x] not in FILLERS and x not in drop] for s in sents]   # as it will play
     for a in range(len(sents)):
-        if len(toks[a]) < 3:
+        if not toks[a]:
             continue
         for b in range(a + 1, min(len(sents), a + 4)):
-            if not same_clip(sents[a][0], sents[b][0]) or len(toks[b]) < 3:
+            if not same_clip(sents[a][0], sents[b][0]) or not toks[b]:
                 continue
+            if len(toks[a]) < 3 or len(toks[b]) < 3:        # a short line said again word for word ("That's
+                if toks[a] != toks[b] or b != a + 1:        # October. That's October."): only the very next one
+                    continue
             same_start = toks[a][:3] == toks[b][:3]
             ratio = SequenceMatcher(None, toks[a], toks[b], autojunk=False).ratio()
             if same_start or ratio >= 0.7:
