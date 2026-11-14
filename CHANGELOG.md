@@ -2,7 +2,7 @@
 
 Newest first. Date · area · what · why.
 
-## 0.2.0 · 2026-11-12 · easier: install, first reel, replies, yaps
+## 0.2.0 · 2026-11-13 · easier (install, first reel, replies, yaps) and news graphics
 
 Members said the editor felt complicated. This release is about that. (The first three bullets are what Claude
 shows a member as "what's new".)
@@ -20,6 +20,9 @@ shows a member as "what's new".)
   cuts in three quarters through. Long points wrap into two even lines; the length follows the reading (about six
   words a second, 7 to 12 s). Drawn by the look (optional `listicle.checklist` block; older looks get numbers from
   their own type size). The usual list and its columns are unchanged. `formats/listicle.md` § The checklist layout.
+- **X-reel photos shown whole**: the name, handle and post text stay inside the reel safe zone, and the photo
+  alone may run below it, down to the feed-safe line. A landscape photo is no longer cropped; a tall one keeps
+  most of its height. Before, the photo was cut to whatever strip was left above the caption area.
 - **B-roll text keeps off faces**: the editor looks for faces in the clip or photo and, when the lines would cross
   one, moves the whole block to the nearest clear spot in the feed-safe band (slightly smaller type only when that
   is what it takes), and says so in a `note:` line. `gre preview` shows the same placement. `"center_y"` or
