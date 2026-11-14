@@ -145,7 +145,17 @@
   },
   "list_top": 0.28,
   "max_width": 940,
-  "column_width": 480
+  "column_width": 480,
+  "checklist": {
+   "_about": "The checklist layout: the book serif in square paper boxes. Every field is optional (looks/README.md).",
+   "size": 48,
+   "weight": 600,
+   "pitch": 60,
+   "pad_x": 20,
+   "pad_y": 8,
+   "radius": 2,
+   "gap": 24
+  }
  },
  "xreel": {
   "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font. Static (no zoom), 6-7 s, the card centred in the reel safe zone.",

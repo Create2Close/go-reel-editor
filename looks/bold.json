@@ -190,7 +190,17 @@
   },
   "list_top": 0.262,
   "max_width": 930,
-  "column_width": 470
+  "column_width": 470,
+  "checklist": {
+   "_about": "The checklist layout: ExtraBold type in rounder, roomier boxes. Every field is optional (looks/README.md).",
+   "size": 52,
+   "weight": 800,
+   "pitch": 64,
+   "pad_x": 24,
+   "pad_y": 8,
+   "radius": 20,
+   "gap": 26
+  }
  },
  "xreel": {
   "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font. Static (no zoom), 6-7 s, the card centred in the reel safe zone.",

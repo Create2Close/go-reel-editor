@@ -29,6 +29,14 @@ black box), `outline` (no box, white with a dark edge).
   post, the family trip for a step-away post). One steady phone shot, 6-8 s.
 - **7 s** unless the member asks otherwise. Silent: the sound goes on in the app.
 - Text stays in the feed-safe band (the engine refuses anything outside it).
+- **Text never sits on a face.** The lines normally sit mid-frame. The editor looks for faces in the footage first
+  (a photo once, a moving clip five times across the part the reel uses); when the lines would cross one, the whole
+  block moves up or down to the nearest spot that clears every face, and the type gets a little smaller only when
+  that is what it takes to fit there (never under four fifths of the look's size). It says so in a `note:` line:
+  pass it on in one line ("I moved the text below your face"). If the note says it could not fully clear the face,
+  tell the member and offer the fix: fewer or shorter lines, or footage with more room around the face.
+  To place the text yourself: `"center_y": 0.3` in the spec (0 top, 1 bottom) or a block's own `"y"`; either one,
+  or `"avoid_faces": false`, switches this off.
 
 ## Check before you hand it over
 

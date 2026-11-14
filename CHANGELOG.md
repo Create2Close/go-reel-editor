@@ -15,6 +15,15 @@ shows a member as "what's new".)
 - **Talking videos in one stop**: Claude does the cut, the captions and the title and shows one finished first
   version; the member says what to change or "looks good". "Step by step" is still there on request, and the
   numbered transcript only appears when they ask what was cut.
+- **A checklist listicle**: `"layout": "checklist"` in a listicle spec draws one centred column, every line in its
+  own rounded box: a coloured title, three to six full-sentence points with a check mark, and a closing line that
+  cuts in three quarters through. Long points wrap into two even lines; the length follows the reading (about six
+  words a second, 7 to 12 s). Drawn by the look (optional `listicle.checklist` block; older looks get numbers from
+  their own type size). The usual list and its columns are unchanged. `formats/listicle.md` § The checklist layout.
+- **B-roll text keeps off faces**: the editor looks for faces in the clip or photo and, when the lines would cross
+  one, moves the whole block to the nearest clear spot in the feed-safe band (slightly smaller type only when that
+  is what it takes), and says so in a `note:` line. `gre preview` shows the same placement. `"center_y"` or
+  `"avoid_faces": false` in the spec switches it off; footage with no face comes out exactly as before.
 - **Graphics on talking videos**: a headline card (the article's headline, outlet and date, with a highlighter
   swipe across the key phrase), the rate chart (Freddie Mac's weekly 30-year average, last 52 weeks, the line draws
   itself and the number counts up, with its source and date), a stat card (one number, or from → to) and a lower

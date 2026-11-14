@@ -4,13 +4,27 @@
   {"clip": "...", "title": "...", "columns": [{"header": "RENTING:", "color": "red", "items": [...]},
                                               {"header": "OWNING:", "color": "green", "items": [...]}], ...}
 
-7 s unless the spec sets "duration" (a 13-14 row table can earn 10-12 s)."""
+7 s unless the spec sets "duration" (a 13-14 row table can earn 10-12 s).
+
+A second layout, chosen in the spec with "layout": "checklist" (checklist.py): one centred column of full-sentence
+points, each line in its own rounded box, a check mark before each point, the closing line cutting in late."""
 import tempfile
 from pathlib import Path
 from PIL import Image, ImageDraw
 from .common import (W, H, SAFE_TOP, SAFE_BOTTOM, X264, die, run, need, clear_rotation, video_info,
                      bg_input, bg_filter)
 from .text import style_font, wrap, block_height, draw_lines
+
+
+LAYOUTS = ("list", "checklist")
+
+
+def is_checklist(spec):
+    """The spec's "layout" ("style" means the same): "list" (the default: one column or two) or "checklist"."""
+    name = spec.get("layout") or spec.get("style") or "list"
+    if name not in LAYOUTS:
+        die(f"a listicle has no layout {name!r}: it is 'list' (the usual one) or 'checklist'")
+    return name == "checklist"
 
 
 def rows(spec):
@@ -21,12 +35,18 @@ def rows(spec):
 
 def duration_for(spec, lk=None):
     """7 s unless the spec says otherwise (Cyrus, 2026-10-15: listicles and b-rolls are 7 s unless noted)."""
+    if is_checklist(spec):
+        from . import checklist
+        return checklist.duration_for(spec, lk)
     if spec.get("duration"):
         return float(spec["duration"])
     return float((lk or {}).get("duration_s", 7.0))
 
 
 def check(spec):
+    if is_checklist(spec):
+        from . import checklist
+        return checklist.check(spec)
     warn = []
     if not spec.get("title"):
         die("a listicle needs a 'title'")
@@ -49,6 +69,9 @@ def check(spec):
 
 
 def card(spec, lk):
+    if is_checklist(spec):
+        from . import checklist
+        return checklist.card(spec, lk)
     L = lk["listicle"]
     styles = {**lk["styles"], **L.get("header_styles", {})}
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -113,6 +136,9 @@ def _under_panel(img, pn):
 
 
 def render(spec, lk, out, log=print):
+    if is_checklist(spec):
+        from . import checklist
+        return checklist.render(spec, lk, out, log)
     for w in check(spec):
         log("warning: " + w)
     need("ffmpeg")

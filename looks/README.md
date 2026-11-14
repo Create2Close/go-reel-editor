@@ -16,7 +16,8 @@ command overrides it once.
 
 - `font`, `weight`, `size`: the default type (variable fonts take any weight 100-1000).
 - `max_width`, `pad_x`, `pad_y`, `line_gap`, `block_gap`, `center_y`: b-roll block layout (pixels on a 1080x1920
-  frame; `center_y` 0-1).
+  frame; `center_y` 0-1). Optional `min_size`: the smallest the b-roll type may get when it has to fit beside a face
+  (default: four fifths of `size`).
 - `styles`: named text styles. A **boxed** style has `box` and `ink` (RGBA). An **outline** style has
   `"outline": true`, `ink`, `edge`, `edge_w` (edge thickness as a share of the font size; 0 = none), optional
   `bold` (faux-bold), `shadow` (`color`, `dy`, `blur`, `spread`), `font`, `size_scale`, `weight`, `leading`.
@@ -24,6 +25,16 @@ command overrides it once.
 - `listicle`: `title` / `item` / `header` / `small` / `punchline` (each `size`, `weight`, `style`), `header_styles`
   (column header colours), `list_top`, `max_width`, `column_width`, optional `panel` (`width`, `pad`, `radius`,
   `fill`) drawn under the whole card.
+- `listicle.checklist` (the checklist layout, `formats/listicle.md`). Optional, and so is every field in it: a
+  look without it gets numbers worked out from its own `size`, so a look made before this layout still draws one.
+  - `size` (type, px; default 86 % of the look's `size`), `weight` (default 700, or the look's if heavier),
+    `pitch` (line to line, default 1.2 x size), `pad_x` (box wider than the text, each side), `pad_y` (box taller
+    than the lines, top and bottom), `radius` (box corners; 0-2 for square), `gap` (between two blocks).
+  - `max_width` (the widest box; default the listicle's `max_width`), `center_y` (0-1, default 0.494), `min_size`
+    (the smallest the type may get to make a long list fit; default 84 % of `size`), `bullet` (default the check mark).
+  - `title`, `item`, `punchline`: which of `styles` gives each its box and text colour. Defaults: `accent` (a
+    member's own colour) if the look has one, else `red`, for the title; `white` for the points; `black` for the
+    closing line.
 - `xreel`: layout numbers measured from a real X-reel (avatar 134 px at x108, text 53 px, image 864 px wide).
   Leave them unless the card looks wrong.
 - `captions` (yaps): `font`, `size`, `weight`, `bold_weight`, `fill`, `edge`, `edge_w`, `shadow`, `center_y`

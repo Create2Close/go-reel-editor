@@ -26,6 +26,24 @@ def face_boxes(frames):
     return out
 
 
+_WIDE = None
+
+
+def all_faces(frames):
+    """EVERY face in every frame as (x, y, w, h), for footage that is not a talking head (b-roll). Two detectors:
+    the second finds a tilted or turned face the first misses; faces down to 80 px. The same face may come back
+    twice: callers take the union."""
+    global _WIDE
+    _WIDE = _WIDE or [cv2.CascadeClassifier(cv2.data.haarcascades + f"haarcascade_frontalface_{n}.xml")
+                      for n in ("default", "alt2")]
+    out = []
+    for img in frames:
+        small = cv2.resize(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), (W // 2, H // 2))
+        for c in _WIDE:
+            out += [tuple(int(2 * v) for v in f) for f in c.detectMultiScale(small, 1.1, 5, minSize=(40, 40))]
+    return out
+
+
 def head_span(boxes):
     """(highest head point, brow line, lowest chin point) over face boxes: face top minus a third of the face for
     hair, the brow where the face proper starts, face bottom plus a sixth for the chin. Nones if there are no boxes."""

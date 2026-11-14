@@ -25,7 +25,7 @@ import argparse, json, shutil, subprocess, sys, tempfile
 from pathlib import Path
 from . import __version__
 from .common import (SKILL, HOME, FONTS, UserError, load_look, look_names, profile, save_profile, read_spec,
-                     out_path, video_info, need, W, H)
+                     out_path, video_info, need)
 
 FORMATS = ("listicle", "broll", "xreel")
 
@@ -62,11 +62,7 @@ def cmd_preview(a):
         if fmt == "listicle":
             overlay = m.card(spec, lk)
         else:
-            sized, tops = m.layout(spec["blocks"], lk)
-            from .text import draw_lines
-            overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-            for (lines, f, st, _), top in zip(sized, tops):
-                draw_lines(overlay, lines, f, st, lk, W / 2, top)
+            overlay = m.overlay(*m.place(spec, lk))        # the same placement as the render (clear of faces)
         from .common import source_filter, FILL, run, is_image
         tmp = Path(tempfile.mkdtemp(prefix="gre-prev-")) / "bg.png"
         t = float(spec.get("start", 0)) + (a.at if a.at is not None else 1.0)

@@ -157,7 +157,17 @@
   },
   "list_top": 0.29,
   "max_width": 930,
-  "column_width": 470
+  "column_width": 470,
+  "checklist": {
+   "_about": "The checklist layout (formats/listicle.md): every line in its own rounded box. Measured from a posted reel: 50 px bold type on a 60 px line, boxes 20 px wider than the text each side, 24 px between blocks. Every field is optional (looks/README.md).",
+   "size": 50,
+   "weight": 700,
+   "pitch": 60,
+   "pad_x": 20,
+   "pad_y": 8,
+   "radius": 12,
+   "gap": 24
+  }
  },
  "xreel": {
   "_about": "Layout measured from a posted GO coach X-reel (avatar 134 px at x108 on 1080 wide) and its Canva template. Inter stands in for X's own font. Static (no zoom), 6-7 s, the card centred in the reel safe zone.",
