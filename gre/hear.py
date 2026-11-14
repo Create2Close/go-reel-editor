@@ -115,6 +115,32 @@ def sound(env, a, b, thr=None):
     return float((env[k0:k1] > thr).sum()) / 100 if k1 > k0 else 0.0
 
 
+def speech_level(env, thr=None):
+    """The level SPEECH passes: `thr` is anything above the room (a breath, a fading s), this is a voice."""
+    thr = threshold(env) if thr is None else thr
+    live = env[env > -85]
+    return max(thr, float(np.percentile(live, 95)) - 28) if len(live) >= 20 else thr
+
+
+def uncovered(env, level, a, b, words, shortest=0.35, slack=0.08):
+    """[(start, end)] between a and b: speech that no word covers (each word's span widened by `slack`), at least
+    `shortest` seconds of it. Dips shorter than 0.06 s do not break a stretch."""
+    k0, k1 = max(0, int(round(a * 100))), min(len(env), int(round(b * 100)))
+    if k1 <= k0:
+        return []
+    on = env[k0:k1] > level
+    for w in words:
+        on[max(0, int((w["start"] - slack) * 100) - k0):max(0, int((w["end"] + slack) * 100) - k0 + 1)] = False
+    edges = np.flatnonzero(np.diff(np.concatenate(([0], on.view(np.int8), [0]))))
+    runs = []
+    for x, y in zip(edges[::2], edges[1::2]):
+        if runs and x - runs[-1][1] <= 6:
+            runs[-1][1] = int(y)
+        else:
+            runs.append([int(x), int(y)])
+    return [((k0 + x) / 100, (k0 + y) / 100) for x, y in runs if float(on[x:y].sum()) / 100 >= shortest]
+
+
 def spoken(word):
     """About how many words it takes to SAY a written word: '$400,000' is four, '7.11%' is five, 'payment' is one."""
     parts = word.replace("—", "-").split("-")
@@ -186,8 +212,9 @@ def settle(words, env, thr):
         if not gaps or gaps[0][0] >= w["end"] or gaps[0][0] - w["start"] > 0.45:
             continue                                # no gap in the span, or too much sound before it to be a tail
         g0, g1 = gaps[0]
-        if g1 >= room - 0.03:
-            continue                                # nothing left for the word itself: leave it alone
+        if g1 >= room - 0.03 or sound(env, g1, min(room, g1 + 0.5), thr) < 0.05:
+            continue                                # nothing after the gap for the word itself (the last word of
+                                                    # a take, with the silence that follows it): leave it alone
         if sound(env, w["start"], g0, thr) >= 0.02:
             p["end"] = round(g0, 3)
         w["start"] = round(g1, 3)

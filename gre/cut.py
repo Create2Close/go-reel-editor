@@ -32,8 +32,7 @@ class Envelope:
         self.thr = hear.threshold(self.env)
         # Two levels. `thr` is anything above the room: a breath, the fading end of an s. `soft` is speech: a breath
         # after a sentence is not something to hold a cut open for, and half a second of it is a pause like any other.
-        live = self.env[self.env > -85]
-        self.soft = max(self.thr, float(np.percentile(live, 95)) - 28) if len(live) >= 20 else self.thr
+        self.soft = hear.speech_level(self.env, self.thr)
         self.isl = hear.islands(self.env, self.soft, pad=0.0)
 
     def floor(self, t):
@@ -87,11 +86,37 @@ class Envelope:
                 break
         return None
 
-    def silences(self, a, b):
+    def silences(self, a, b, said=()):
         """Every pause of PAUSE or more between a and b: no speech in it (a breath alone does not fill a pause).
-        Each starts after the soft ending of the sound before it and ends before the soft start of the next."""
+        Each starts after the soft ending of the sound before it and ends before the soft start of the next.
+
+        Two witnesses. The waveform says where it is quiet; the transcript (`said`: the spans of words timed at a
+        believable length) says where a word is. A quiet voice in a loud room sinks under the speech level, and
+        "of your business. If you're" must not lose "business. If" as a pause: where a word sits, quiet is not a
+        pause. (A word timed far too long vouches for nothing: see `believable`. And if a word really was timed into
+        a silence, the listen-back says so: dead air, or the word not heard.)"""
+        k0, k1 = max(0, int(round(a * 100))), min(self.n, int(round(b * 100)))
+        if k1 <= k0:
+            return []
+        env = self.env[k0:k1]
+        quiet = env <= self.soft
+        if said:
+            word = np.zeros(k1 - k0, bool)
+            for x, y in said:
+                word[max(0, int(x * 100) - k0):max(0, int(y * 100) - k0)] = True
+            quiet &= ~word
+        edges = np.flatnonzero(np.diff(np.concatenate(([0], quiet.view(np.int8), [0]))))
+        runs = []
+        for x, y in zip(edges[::2], edges[1::2]):
+            if runs and x - runs[-1][1] <= 3:           # a click of 30 ms does not end a pause
+                runs[-1][1] = int(y)
+            else:
+                runs.append([int(x), int(y)])
         out = []
-        for s0, s1 in hear.silences(self.env, self.soft, PAUSE, a, b):
+        for x, y in runs:
+            if y - x < PAUSE * 100:
+                continue
+            s0, s1 = (k0 + x) / 100, (k0 + y) / 100
             s0, s1 = min(self.fade(s0), s1), max(self.rise(s1), s0)
             if s1 - s0 >= 0.25:
                 out.append((s0, s1))
@@ -119,9 +144,15 @@ def _drops(keep, clip_paths):
     return out
 
 
-def _pieces(start, end, env, drops):
+def believable(w):
+    """Is this word timed at a length it could be said in? One that is far longer has swallowed a pause, or a take
+    the transcript missed, and vouches for nothing."""
+    return w["end"] - w["start"] <= 0.3 + 0.12 * hear.spoken(w["w"]) * max(3, len(w["w"]) / hear.spoken(w["w"]))
+
+
+def _pieces(start, end, env, drops, said=()):
     """[start, end] minus its real silences (each side keeps its room tone) and minus the dropped stretches."""
-    holes = [(s0 + TAIL, s1 - HEAD) for s0, s1 in env.silences(start, end)]
+    holes = [(s0 + TAIL, s1 - HEAD) for s0, s1 in env.silences(start, end, said)]
     holes += [(a, b) for a, b in drops if b > start and a < end]
     out, t = [], start
     for a, b in sorted(holes):
@@ -197,7 +228,8 @@ def build(flat, keep, clip_paths, log=print):
                 if b9 - a9 <= STRAY and a9 - b8 >= STRAY_GAP:
                     stray.append((a9, b9, l, "end"))
         # the waveform has the last word: no silence of PAUSE or more plays, and nothing that was dropped
-        pieces = _pieces(start, end, env, drops.get(ci, ()))
+        pieces = _pieces(start, end, env, drops.get(ci, ()),
+                         [(flat[i]["start"], flat[i]["end"]) for i in s["words"] if believable(flat[i])])
         if not pieces:
             log(f"  note: W{f}-W{l} ({' '.join(flat[i]['w'] for i in s['words'][:6])}) has no sound: left out")
             continue

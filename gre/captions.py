@@ -237,6 +237,7 @@ def keyword(tokens, skip=()):
     live = [i for i, t in enumerate(tokens) if t]
     n = [_core(tokens[i]) for i in live]
     at = lambda q: n[q] if 0 <= q < len(n) else ""
+    joined = {x.replace("-", "") for x in n if "-" in x.strip("-")}
     hits = set()
     for k in range(len(n)):
         if n[k] not in ASK or at(k - 1) in ("a", "the", "your", "my", "that", "this", "one", "no"):
@@ -257,6 +258,8 @@ def keyword(tokens, skip=()):
         end = j + 1 >= len(n) or bool(_tail(tokens[live[j]]))
         if named:
             hits.add(live[j])
+            if not end and c + at(j + 1) in joined:        # "the word buy down": one word they wrote "buy-down"
+                hits.add(live[j + 1])
         elif n[k] in ASK_PLAIN and (end or at(j + 1) in AFTER_A_KEYWORD):
             hits.add(live[j])
         elif at(j + 1) in ("below", "down") or (at(j + 1) == "in" and "comment" in at(j + 2) + at(j + 3)):

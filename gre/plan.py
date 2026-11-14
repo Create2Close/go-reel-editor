@@ -187,6 +187,11 @@ def plan_unscripted(flat):
                 j = i + k + g
                 if j + k > n or not same_clip(i, j + k - 1):
                     continue
+                # words between the two goes: fewer than the phrase itself, and not ending on "or" / "and". Otherwise
+                # it is a list, not a restart: "how to raise funds, how to find a problem", "giving you the
+                # shortcut or giving you the advice". Both halves of a list stay.
+                if g and (g >= k or T[j - 1] in ("and", "or", "but", "nor", "then", "plus")):
+                    continue
                 again = T[i:i + k] == T[j:j + k] or (            # "and that, and that's": the last word finished
                     k >= 2 and T[i:i + k - 1] == T[j:j + k - 1] and len(T[i + k - 1]) >= 3
                     and T[j + k - 1].startswith(T[i + k - 1]))
@@ -222,7 +227,17 @@ def plan_unscripted(flat):
                     continue
             same_start = toks[a][:3] == toks[b][:3]
             ratio = SequenceMatcher(None, toks[a], toks[b], autojunk=False).ratio()
-            if same_start or ratio >= 0.7:
+            # a wrong word, a long stop, then the line again with the right one ("Credit has the most ways. (3 s)
+            # Cash has the most ways around it."): after a real pause a little less likeness is enough
+            stopped = b == a + 1 and flat[sents[b][0]]["start"] - flat[sents[a][-1]]["end"] >= 1.5
+            # The same first three words are a retake only when the first go was dropped (it breaks off within two
+            # words of where the two part) or reworded (nearly the same words). Two full lines that only OPEN the
+            # same way are a list: "You don't know your margin, so you underprice. You don't know your cash runway,
+            # so one slow month turns into a crisis." Both stay.
+            lead = next((k for k, (x, y) in enumerate(zip(toks[a], toks[b])) if x != y), min(len(toks[a]), len(toks[b])))
+            shared = len(set(toks[a]) & set(toks[b])) / min(len(set(toks[a])), len(set(toks[b])))
+            again = same_start and (lead >= max(3, len(toks[a]) - 2) or shared >= 0.75)
+            if again or ratio >= (0.6 if stopped else 0.7):
                 for s in sents[a:b]:
                     for x in s:
                         drop.setdefault(x, "retake (the last take wins)")

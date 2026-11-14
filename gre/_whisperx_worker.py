@@ -170,19 +170,20 @@ def listen(path):
     utts = [(max(0.0, a), min(b, end)) for a, b in utts if min(b, end) - max(0.0, a) > 0.05]
     say(f"{os.path.basename(path)}: {len(audio) / SR:.0f} s, {len(utts)} stretches of speech")
     res = decode_all(audio, utts)
-    # 3. the second opinion, where the words do not fill the sound
+    level = hear.speech_level(env, thr)
+    # 3. the second opinion, where the words do not fill the sound: far fewer words than the sound can hold, or
+    #    speech and no words at all (the batch decoder now and then returns nothing for a short piece)
     rate = [said(r["words"]) / max(0.3, hear.sound(env, a, b, thr)) for r, (a, b) in zip(res, utts)]
     usual = float(np.median([x for x, r in zip(rate, res) if len(r["words"]) >= 3] or [3.0]))
     again = [k for k, ((a, b), r) in enumerate(zip(utts, res))
-             if r["nsp"] <= NO_SPEECH and hear.sound(env, a, b, thr) >= 1.5 and rate[k] < 0.6 * usual]
+             if (r["nsp"] <= NO_SPEECH and r["words"] and hear.sound(env, a, b, thr) >= 1.5 and rate[k] < 0.6 * usual)
+             or ((r["nsp"] > NO_SPEECH or not r["words"]) and hear.sound(env, a, b, level) >= 0.6)]
     for k in again:
         a, b = utts[k]
         alt = decode_one(audio, a, b)
-        if alt["nsp"] <= NO_SPEECH and said(alt["words"]) > said(res[k]["words"]) \
+        if alt["nsp"] <= NO_SPEECH and said(alt["words"]) > (said(res[k]["words"]) if res[k]["nsp"] <= NO_SPEECH else 0) \
                 and said(alt["words"]) / max(0.3, hear.sound(env, a, b, thr)) <= 6.5:
             res[k] = alt
-    if again:
-        say(f"listened twice to {len(again)} of them (more sound than words)")
     # a short noise (a breath, a chair) can come back as a word or two because the prompt invites them: ask again
     # with no prompt, and believe Whisper when it then says there is no speech
     for k, ((a, b), r) in enumerate(zip(utts, res)):
@@ -190,14 +191,30 @@ def listen(path):
             break                                       # a cut's own pieces are speech: nothing to ask twice
         if r["words"] and len(r["words"]) <= 3 and r["nsp"] <= NO_SPEECH and hear.sound(env, a, b, thr) < 1.5:
             r["nsp"] = max(r["nsp"], decode_one(audio, a, b, initial_prompt=None)["nsp"])
-    words, sounds = [], []
+    words, sounds, twice = [], [], len(again)
     for k, ((a, b), r) in enumerate(zip(utts, res)):
         if r["nsp"] > NO_SPEECH or not r["words"]:
             sounds.append([round(a, 2), round(b, 2)])
             continue
-        for w in refine(audio, a, b, r["words"], env, thr):
+        mine = refine(audio, a, b, r["words"], env, thr)
+        # 3b. once the words are timed: a stretch of speech that no word covers ("...when it's time to hire" and the
+        #     sound runs on: "an accountant" was left off). Read the utterance the slow way, and take that reading
+        #     when it puts words there.
+        bare = hear.uncovered(env, level, a, b, mine)
+        if bare and k not in again:
+            twice += 1
+            alt = decode_one(audio, a, b)
+            if alt["nsp"] <= NO_SPEECH and alt["words"]:
+                theirs = refine(audio, a, b, alt["words"], env, thr)
+                left = hear.uncovered(env, level, a, b, theirs)
+                if sum(y - x for x, y in left) < sum(y - x for x, y in bare) and said(theirs) >= said(mine):
+                    mine, bare = theirs, left
+        sounds += [[round(x, 2), round(y, 2)] for x, y in bare if y - x >= 0.5]
+        for w in mine:
             w["start"], w["end"] = max(round(a, 3), w["start"]), min(round(b, 3), max(w["end"], w["start"] + 0.02))
             words.append(dict(w, u=k))
+    if twice:
+        say(f"listened twice to {twice} of them (more sound than words)")
     return {"clip": os.path.basename(path), "path": os.path.abspath(path), "duration": round(len(audio) / SR, 3),
             "words": words, "sounds": sounds, "utterances": [[round(a, 2), round(b, 2)] for a, b in utts]}
 

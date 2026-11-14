@@ -53,6 +53,9 @@ def chunks(lengths, shortest=3.0, longest=8.0):
         else:
             out.append([round(t, 3), round(t + d, 3)])
         t += d
+    if len(out) >= 2 and out[-1][1] - out[-1][0] < shortest:       # a short last piece is read with the one before
+        last = out.pop()
+        out[-1][1] = last[1]
     return out
 
 
@@ -175,7 +178,13 @@ def judge(res, cuts, flat, keep):
     from .cut import source_time
     segs = cuts["segments"]
     res.update(fix=[], notes=[], times={})
+    played = played_words(flat, cuts, keep)
     for a, b in res.get("silences") or []:
+        # quiet is dead air only where no word is meant to be: a soft voice in a loud room sinks under the level
+        # the silence is measured at (and if those words are NOT there, the comparison below says so)
+        words = sum(max(0.0, min(b, p["end"]) - max(a, p["start"])) for p in played)
+        if b - a - words < DEAD_AIR:
+            continue
         c, s0 = source_time(segs, a)
         res["fix"].append(f"{clock(a)}-{clock(b)} is dead air: {b - a:.1f} s with no sound ({c} {s0:.1f} s)")
     ok = {key(x) for x in keep.get("heard_ok") or ()}
@@ -189,7 +198,7 @@ def judge(res, cuts, flat, keep):
             f'{{"from": {s0 - 0.03:.2f}, "to": {s0 + d + 0.05:.2f}}} to "drop" in keep.json; if it is the word '
             f'itself, list it in "heard_ok")')
     if res.get("listened"):
-        times, fixes, notes = compare(played_words(flat, cuts, keep), res["words"], segs, keep.get("heard_ok") or ())
+        times, fixes, notes = compare(played, res["words"], segs, keep.get("heard_ok") or ())
         res.update(times={str(k): v for k, v in times.items()}, notes=notes)
         res["fix"] += fixes
     return res

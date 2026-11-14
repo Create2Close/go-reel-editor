@@ -38,8 +38,21 @@ audio. (The first three bullets are what Claude shows a member as "what's new".)
   word sits in. Before, a rate could lose everything after its first digit.
 - **`"drop"` in `keep.json`**: a stretch of the take, in seconds, that never plays whatever the words say: the way
   to cut something the transcript has no words for.
-- **The first cut knows more repeats**: a restart that finishes its last word ("and that, and that's") and a short
-  line said twice ("That's October. That's October.").
+- **The first cut knows more repeats**: a restart that finishes its last word ("and that, and that's"), a short
+  line said twice ("That's October. That's October."), and a wrong word, a long stop, then the line again with
+  the right one ("Credit has the most ways. (3 s) Cash has the most ways around it.").
+- **A list is not a retake**: two full lines that only open the same way both stay ("You don't know your margin,
+  so you underprice. You don't know your cash runway, so one slow month..."), and so do the halves of a list inside
+  a sentence ("how to raise funds, how to find a problem", "giving you the shortcut or giving you the advice").
+  0.2.0 cut the first of each. Found on five more takes from four speakers (2026-11-14), with the next three:
+- **A second reading where speech has no words**: after the words are timed, a stretch of speech that no word
+  covers ("...when it's time to hire" and the voice runs on: "an accountant" had been left off) sends that
+  utterance to be read again the slow way, and so does speech that came back with no words at all.
+- **A quiet voice in a loud room is not a pause**: the waveform says where it is quiet, the transcript says where a
+  word is, and a pause needs both. A soft "business. If" that sank under the speech level is no longer cut as a
+  pause, and the listen-back no longer calls it dead air (it asks instead whether the words are heard there).
+- **A comment word of two words**: "drop the word buy down in the comments" marks both, when the video itself
+  writes it as one word ("buy-down").
 - **A script matches however its numbers are written**: "seven point one one" in `script.txt` finds the take
   the transcript wrote as "7.11%", and the caption shows 7.11%. A second go inside a scripted line ("...walked away
   from. Let me do that again. The number you walked away from is already gone.") keeps the second go. The last

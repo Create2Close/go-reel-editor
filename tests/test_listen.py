@@ -179,10 +179,12 @@ def test_a_checked_word_can_be_accepted_without_listening_again(take, tmp_path):
 
 
 def test_the_cut_is_read_back_in_its_own_pieces():
-    ch = listen.chunks([2.0, 0.4, 3.5, 0.3, 0.3, 9.0, 1.0, 4.0])
-    assert ch[0][0] == 0.0 and ch[-1][1] == pytest.approx(20.5)
+    ch = listen.chunks([2.0, 0.4, 3.5, 0.3, 0.3, 9.0, 1.0, 4.0, 1.3])
+    assert ch[0][0] == 0.0 and ch[-1][1] == pytest.approx(21.8)
     assert all(x[1] == y[0] for x, y in zip(ch, ch[1:]))            # no sound is skipped, none is read twice
-    assert all(b - a >= 3.0 for a, b in ch[:-1])                     # no piece too short to hear right
+    assert all(b - a >= 3.0 for a, b in ch)                          # no piece too short to hear right, the last too
+    ch = listen.chunks([5.0, 7.5, 7.9, 1.3])                         # a short last piece after one that was full
+    assert ch == [[0.0, 5.0], [5.0, 12.5], [12.5, 21.7]]
 
 
 def test_a_clipped_word_and_a_clipped_number_are_fixes():
@@ -443,3 +445,98 @@ def test_a_word_boundary_moves_to_where_the_sound_puts_it(restart):
     words = [{"w": "was", "start": 0.2, "end": 1.0}, {"w": "7.4%.", "start": 1.0, "end": 3.0}]
     hear.settle(words, env, thr)
     assert words[1]["start"] == 1.0
+
+
+def test_a_wrong_word_then_a_long_stop_then_the_line_again_is_a_retake():
+    f = _flat("Lenders look at three things. Credit has the most ways. Cash has the most ways around it. A gift.")
+    for w in f[10:]:
+        w["start"] += 3.4; w["end"] += 3.4                           # the stop after "ways."
+    keep, cuts = plan.plan_unscripted(f)
+    assert " ".join(f[i]["w"] for i in keep) == "Lenders look at three things. Cash has the most ways around it. A gift."
+    f = _flat("Credit takes the most time. Income takes the most work too.")     # no stop: two lines, both stay
+    keep, cuts = plan.plan_unscripted(f)
+    assert len(keep) == len(f)
+
+
+def test_a_comment_word_of_two_words_is_found_when_the_video_writes_it_as_one():
+    said = "Structured as a buy-down, it buys more. Drop the word buy down in the comments below, and I'll send it."
+    toks = said.split()
+    assert [toks[i] for i in sorted(captions.keyword(toks))] == ["buy", "down"]
+    lines = captions.draft([{"i": k, "w": w, "heard": w, "start": k * 0.4, "end": k * 0.4 + 0.3}
+                            for k, w in enumerate(toks)], load_look("clean"))
+    assert "**BUY** **DOWN**" in " ".join(lines)
+
+
+def test_the_last_word_of_a_take_is_not_pushed_into_the_silence_after_it():
+    # the clip ends 0.25 s after the last word: "yet?" is the sound up to 3.0 s, and its timed end runs to the end
+    env = np.full(325, -20.0)
+    env[300:] = -70.0
+    words = [{"w": "lender", "start": 2.0, "end": 2.6}, {"w": "yet?", "start": 2.6, "end": 3.25}]
+    hear.settle(words, env, -50.0)
+    assert words == [{"w": "lender", "start": 2.0, "end": 2.6}, {"w": "yet?", "start": 2.6, "end": 3.25}]
+    # the same shape in the MIDDLE of a take, with the word's real sound after the gap, does move
+    env = np.concatenate([np.full(300, -20.0), np.full(40, -70.0), np.full(100, -20.0)])
+    words = [{"w": "rates,", "start": 2.0, "end": 2.8}, {"w": "mortgage", "start": 2.8, "end": 3.9}]
+    hear.settle(words, env, -50.0)
+    assert words[0]["end"] == 3.0 and words[1]["start"] == 3.4
+
+
+@pytest.mark.parametrize("text,expect", [
+    # a list that opens the same way each time is not a retake
+    ("You don't know your margin so you underprice. You don't know your cash runway, so one slow month hurts.",
+     "You don't know your margin so you underprice. You don't know your cash runway, so one slow month hurts."),
+    # a go that breaks off, then the whole line
+    ("You don't know your cash runway. So one crisis. You don't know your cash runway, so one slow month hurts.",
+     "You don't know your cash runway, so one slow month hurts."),
+    ("Four weeks ago, the average 30-year wait Four weeks ago, the average 30-year rate was 7.4%.",
+     "Four weeks ago, the average 30-year rate was 7.4%."),
+    # the same line, reworded
+    ("Yours depends on your down payment and credit score. Yours depends on your credit and your down payment.",
+     "Yours depends on your credit and your down payment."),
+])
+def test_a_list_is_not_a_retake(text, expect):
+    f = _flat(text)
+    keep, cuts = plan.plan_unscripted(f)
+    assert " ".join(f[i]["w"] for i in keep) == expect
+
+
+@pytest.mark.parametrize("text,expect", [
+    ("They know how to raise funds, how to find a problem, or how to create a solution.",
+     "They know how to raise funds, how to find a problem, or how to create a solution."),
+    ("Someone giving you the shortcut or giving you the advice is better.",
+     "Someone giving you the shortcut or giving you the advice is better."),
+    ("So on a four, so on a $400,000 loan, that is less.", "so on a $400,000 loan, that is less."),
+    ("And here's the, and here's the most, and here's the part that most people miss.",
+     "and here's the part that most people miss."),
+    ("I'm not telling you it, I'm not telling you it's cheap.", "I'm not telling you it's cheap."),
+])
+def test_a_list_inside_a_sentence_is_not_a_restart(text, expect):
+    f = _flat(text)
+    keep, cuts = plan.plan_unscripted(f)
+    assert " ".join(f[i]["w"] for i in keep) == expect
+
+
+def test_speech_that_no_word_covers_is_found(take):
+    env = hear.envelope(hear.load(take))
+    level = hear.speech_level(env)
+    # the take has sound at 4-4.6, 5-5.6 and 6-6.6 s; the transcript stops after the second ("...time to hire")
+    words = [{"w": "to", "start": 4.0, "end": 4.6}, {"w": "hire", "start": 5.0, "end": 5.6}]
+    bare = hear.uncovered(env, level, 3.9, 6.8, words)
+    assert len(bare) == 1 and bare[0][0] == pytest.approx(6.0, abs=0.05) and bare[0][1] == pytest.approx(6.6, abs=0.05)
+    words.append({"w": "accountant.", "start": 6.0, "end": 6.6})
+    assert not hear.uncovered(env, level, 3.9, 6.8, words)
+    assert not hear.uncovered(env, level, 1.7, 3.9, [])              # silence is not speech
+
+
+def test_a_quiet_word_is_not_dead_air(take, tmp_path):
+    # the cut holds 0.9-4.7 s of the take: 2.4 s of it is silent. With no word meant to be there it is dead air ...
+    flat = [_word(0, "one", 1.0, 1.6), _word(1, "two", 4.0, 4.6)]
+    cuts = {"clips": [str(take)], "segments": [{"clip": "take.mov", "ci": 0, "start": 0.9, "end": 4.7,
+                                                "first_word": 0, "last_word": 1, "group": 0}]}
+    assert any("dead air" in f for f in listen.run(tmp_path, cuts, flat, {})["fix"])
+    # ... and with words meant to be there (said too softly to measure) it is not: whether they ARE there is the
+    # word-for-word comparison's question
+    flat = [_word(0, "one", 1.0, 1.6), _word(1, "of", 1.7, 2.4), _word(2, "your", 2.5, 3.2), _word(3, "business", 3.3, 3.9),
+            _word(4, "two", 4.0, 4.6)]
+    cuts["segments"][0]["last_word"] = 4
+    assert not any("dead air" in f for f in listen.run(tmp_path, cuts, flat, {})["fix"])
